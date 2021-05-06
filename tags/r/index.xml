@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>R on Carlos Cisneros</title>
+    <link>/tags/r/</link>
+    <description>Recent content in R on Carlos Cisneros</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-US</language>
+    <lastBuildDate>Thu, 06 May 2021 00:00:00 +0000</lastBuildDate><atom:link href="/tags/r/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Coding Fusion!</title>
+      <link>/post/2021/05/06/coding-fusion/</link>
+      <pubDate>Thu, 06 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2021/05/06/coding-fusion/</guid>
+      <description>R and Python: 2 Worlds Collide I realize that the title and subtitle for this page may make it seem like we are gonna do something insanely cool, but it will just be a quick demonstration with some simple reticulate shenanigans.
+Let’s start with out first component: R. Below you’ll see me load up the reticulate package and save a variable as “Da”.
+library(reticulate) Da&amp;lt;-&amp;quot;LESSS&amp;quot; Now for our second component: Python.</description>
+    </item>
+    
+  </channel>
+</rss>

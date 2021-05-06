@@ -60,7 +60,7 @@
  
 <div class="blog-title">
           <h4>
-         January 1, 0001 
+         May 6, 2021 
             &nbsp;&nbsp;
             
           </h4>
@@ -269,7 +269,7 @@ meanDiff&lt;-means-means2
 
 quantile(meanDiff,c(.025, .975))</code></pre>
 <pre><code>##     2.5%    97.5% 
-## 22.15751 39.26684</code></pre>
+## 21.91402 39.13793</code></pre>
 <pre class="r"><code>#Verified with an Independent t-test
 t.test(strokedat[strokedat$strokeNB==&quot;YES&quot;,]$avg_glucose_level, strokedat[strokedat$strokeNB==&quot;NO&quot;,]$avg_glucose_level, var.equal = F)</code></pre>
 <pre><code>##
@@ -368,7 +368,7 @@ coef(fit3)
 ## Estimated SEs
 samp_distn %&gt;% t %&gt;% as.data.frame %&gt;% summarize_all(sd)</code></pre>
 <pre><code>##   (Intercept)     agecent     glucent agecent:glucent
-## 1   0.1096262 0.004480934 0.003294629    0.0001234474</code></pre>
+## 1    0.111057 0.004450311 0.003222655    0.0001240784</code></pre>
 <pre class="r"><code>#Non-Bootstrapped SE
 summary(fit1)$coef[,1:2]</code></pre>
 <pre><code>##                      Estimate   Std. Error
@@ -473,7 +473,7 @@ for(i in 1:k){
 #Classification Diagnostics for 10-fold CV
 summarize_all(diags,mean)</code></pre>
 <pre><code>##         acc        sens      spec ppv       auc
-## 1 0.9574263 0.003448276 0.9997895 NaN 0.8515516</code></pre>
+## 1 0.9574251 0.006666667 0.9997868 NaN 0.8561546</code></pre>
 <pre class="r"><code>library(glmnet)
 
 #LASSO
@@ -486,19 +486,19 @@ lasso&lt;-glmnet(x,y,family=&quot;binomial&quot;,lambda=cv$lambda.1se)
 coef(lasso)</code></pre>
 <pre><code>## 17 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
 ##                                      s0
-## (Intercept)                -5.292370037
+## (Intercept)                -5.446454027
 ## genderMale                  .          
 ## genderOther                 .          
-## age                         0.038162880
-## hypertension                0.183911968
-## heart_disease               0.109619300
+## age                         0.039972664
+## hypertension                0.221094764
+## heart_disease               0.146917949
 ## ever_marriedYes             .          
 ## work_typeGovt_job           .          
 ## work_typeNever_worked       .          
 ## work_typePrivate            .          
 ## work_typeSelf-employed      .          
 ## Residence_typeUrban         .          
-## avg_glucose_level           0.001648935
+## avg_glucose_level           0.001953708
 ## bmi                         .          
 ## smoking_statusnever smoked  .          
 ## smoking_statussmokes        .          
@@ -523,8 +523,8 @@ for(i in 1:k){
 
 #Classification Diagnostics for LASSO 10-fold CV
 summarize_all(diags,mean)</code></pre>
-<pre><code>##         acc sens spec ppv       auc
-## 1 0.9574276    0    1 NaN 0.8468844</code></pre>
+<pre><code>##         acc sens spec ppv      auc
+## 1 0.9574193    0    1 NaN 0.855807</code></pre>
 <p><em>In the final logistic regression, I am now using 10 predictors from the dataset to see if they significantly predict the occurrence of strokes. With this set of classification diagnostics, we have a fairly similar accuracy and AUC (0.85) to last model. However, the sensitivity and specificity changed ever so slightly from 0 and 1, respectively. Precision now has a value of 0.5, meaning that R believes that now at least half of the patients who have had strokes were predicted correctly from the model. Unlike the previous model, now having the rest of the available predictors helped in predicting strokes more effectively, even if the change overall is minuscule. Performing a 10-fold CV gives an AUC of 0.86, which is quite close to the original model. After conducting a LASSO, the non-zero variables we will retain for the final, lasso-selected CV are: age, hypertension, heart disease, and average glucose level. From the lasso-selected CV, a similar, good AUC value is computed like the previous logistic regressions above: 0.85.</em></p>
 </div>
 

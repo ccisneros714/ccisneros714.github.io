@@ -5,23 +5,24 @@
     <link>/project/</link>
     <description>Recent content in Projects on Carlos Cisneros</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-US</language><atom:link href="/project/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Project 1: Exploratory Data Analysis</title>
-      <link>/project/project1/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>/project/project1/</guid>
-      <description>Introduction Hello! For this project I am going to walk you through the interesting world of video streaming statistics featuring the two most prominent platforms presently on the internet: Youtube and Twitch. I spent about a day going through various sites with datasets to see if anything caught my interest, and I fell upon two of them on Kaggle that each featured the top streamers and content creators for Youtube and Twitch, respectively.</description>
-    </item>
-    
+    <language>en-US</language>
+    <lastBuildDate>Thu, 06 May 2021 00:00:00 +0000</lastBuildDate><atom:link href="/project/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Project 2: Modeling, Testing, and Predicting</title>
       <link>/project/project2/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 06 May 2021 00:00:00 +0000</pubDate>
       
       <guid>/project/project2/</guid>
       <description>Introduction strokedat&amp;lt;-read_csv(&amp;quot;healthcare-dataset-stroke-data.csv&amp;quot;) strokedat[strokedat == &amp;quot;N/A&amp;quot;] &amp;lt;- NA strokedat&amp;lt;- strokedat %&amp;gt;% na.omit() head(strokedat) ## # A tibble: 6 x 12 ## id gender age hypertension heart_disease ever_married work_type Residence_type ## &amp;lt;dbl&amp;gt; &amp;lt;chr&amp;gt; &amp;lt;dbl&amp;gt; &amp;lt;dbl&amp;gt; &amp;lt;dbl&amp;gt; &amp;lt;chr&amp;gt; &amp;lt;chr&amp;gt; &amp;lt;chr&amp;gt; ## 1 9046 Male 67 0 1 Yes Private Urban ## 2 31112 Male 80 0 1 Yes Private Rural ## 3 60182 Female 49 0 0 Yes Private Urban ## 4 1665 Female 79 1 0 Yes Self-emp… Rural ## 5 56669 Male 81 0 0 Yes Private Urban ## 6 53882 Male 74 1 1 Yes Private Rural ## # … with 4 more variables: avg_glucose_level &amp;lt;dbl&amp;gt;, bmi &amp;lt;chr&amp;gt;, smoking_status &amp;lt;chr&amp;gt;, stroke &amp;lt;dbl&amp;gt; This Project is going to be using a dataset that attempts to predict how likely a patient is to have a stroke based on various conditions/variables.</description>
+    </item>
+    
+    <item>
+      <title>Project 1: Exploratory Data Analysis</title>
+      <link>/project/project1/</link>
+      <pubDate>Sun, 04 Apr 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/project/project1/</guid>
+      <description>Introduction Hello! For this project I am going to walk you through the interesting world of video streaming statistics featuring the two most prominent platforms presently on the internet: Youtube and Twitch. I spent about a day going through various sites with datasets to see if anything caught my interest, and I fell upon two of them on Kaggle that each featured the top streamers and content creators for Youtube and Twitch, respectively.</description>
     </item>
     
   </channel>

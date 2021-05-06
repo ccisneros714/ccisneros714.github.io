@@ -8,11 +8,20 @@
     <language>en-US</language>
     <lastBuildDate>Thu, 06 May 2021 00:00:00 +0000</lastBuildDate><atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>plot</title>
-      <link>/tags/plot/</link>
+      <title>Python</title>
+      <link>/tags/python/</link>
       <pubDate>Thu, 06 May 2021 00:00:00 +0000</pubDate>
       
-      <guid>/tags/plot/</guid>
+      <guid>/tags/python/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>R</title>
+      <link>/tags/r/</link>
+      <pubDate>Thu, 06 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/tags/r/</guid>
       <description></description>
     </item>
     
@@ -22,15 +31,6 @@
       <pubDate>Thu, 06 May 2021 00:00:00 +0000</pubDate>
       
       <guid>/tags/r-markdown/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>regression</title>
-      <link>/tags/regression/</link>
-      <pubDate>Thu, 06 May 2021 00:00:00 +0000</pubDate>
-      
-      <guid>/tags/regression/</guid>
       <description></description>
     </item>
     

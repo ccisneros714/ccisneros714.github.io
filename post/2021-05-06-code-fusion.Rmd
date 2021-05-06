@@ -3,7 +3,7 @@ title: "Coding Fusion!"
 author: "Carlos Cisneros"
 date: 2021-05-06
 categories: ["R"]
-tags: ["R Markdown", "plot", "regression"]
+tags: ["R Markdown", "Python", "R"]
 ---
 
 # R and Python: 2 Worlds Collide
