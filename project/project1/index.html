@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Carlos Cisneros" />
+    
+    <link rel="shortcut icon" type="image/x-icon" href="../../img/favicon.ico">
+    <title>Project 1: Exploratory Data Analysis</title>
+    <meta name="generator" content="Hugo 0.83.1" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="../../css/main.css" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,200bold,400old" />
+    
+    <!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+
+    
+  </head>
+
+  <body>
+    <div id="wrap">
+      
+      <nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../../"><i class="fa fa-home"></i></a>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar">
+      <ul class="nav navbar-nav navbar-right">
+      
+        
+        <li><a href="../../post/">BLOG</a></li>
+        
+        <li><a href="../../projects/">PROJECTS</a></li>
+        
+        <li><a href="../../resume/">RESUME</a></li>
+        
+      
+      </ul>
+    </div>
+  </div>
+</nav>
+
+      <div class="container">
+        <div class="blog-post">
+          <h3>
+            <strong><a href="../../project/project1/">Project 1: Exploratory Data Analysis</a></strong>
+          </h3>
+        </div>
+ 
+<div class="blog-title">
+          <h4>
+         January 1, 0001 
+            &nbsp;&nbsp;
+            
+          </h4>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="blogpost">
+              
+<script src="../../rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
+<script src="../../rmarkdown-libs/plotly-binding/plotly.js"></script>
+<script src="../../rmarkdown-libs/typedarray/typedarray.min.js"></script>
+<script src="../../rmarkdown-libs/jquery/jquery.min.js"></script>
+<link href="../../rmarkdown-libs/crosstalk/css/crosstalk.css" rel="stylesheet" />
+<script src="../../rmarkdown-libs/crosstalk/js/crosstalk.min.js"></script>
+<link href="../../rmarkdown-libs/plotly-htmlwidgets-css/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="../../rmarkdown-libs/plotly-main/plotly-latest.min.js"></script>
+
+
+<hr />
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<div id="hello-for-this-project-i-am-going-to-walk-you-through-the-interesting-world-of-video-streaming-statistics-featuring-the-two-most-prominent-platforms-presently-on-the-internet-youtube-and-twitch.-i-spent-about-a-day-going-through-various-sites-with-datasets-to-see-if-anything-caught-my-interest-and-i-fell-upon-two-of-them-on-kaggle-that-each-featured-the-top-streamers-and-content-creators-for-youtube-and-twitch-respectively.-the-youtube-dataset-contains-the-top-250-channels-in-the-united-states-including-their-subscriber-count-at-the-time-2020-total-views-rank-grade-as-deemed-by-the-social-blade-tracking-website-and-total-uploads.-the-twitch-dataset-has-broader-statistics-available-for-collection-such-as-total-watch-time-cumulative-from-all-viewers-total-stream-time-peak-record-viewers-on-stream-language-partner-status-follower-count-and-views-gained.-this-is-particularly-interesting-to-me-since-twitch-is-a-big-player-on-the-internet-and-is-continuing-to-grow-while-youtube-has-been-a-video-hosting-super-power-for-more-than-a-decade-now.-i-thought-it-would-be-cool-to-analyze-these-datasets-combined-and-how-the-data-from-each-platform-compares-to-each-other-from-last-year-2020." class="section level4">
+<h4>Hello! For this project I am going to walk you through the interesting world of video streaming statistics featuring the two most prominent platforms presently on the internet: Youtube and Twitch. I spent about a day going through various sites with datasets to see if anything caught my interest, and I fell upon two of them on Kaggle that each featured the top streamers and content creators for Youtube and Twitch, respectively. The Youtube dataset contains the top 250 channels in the United States, including their Subscriber count at the time (2020), total views, rank, grade (as deemed by the Social Blade tracking website), and total uploads. The Twitch dataset has broader statistics available for collection, such as: total Watch time (cumulative from all viewers), total Stream time, peak (record) viewers on stream, language, partner status, follower count, and views gained. This is particularly interesting to me since Twitch is a big player on the internet and is continuing to grow, while Youtube has been a video-hosting super power for more than a decade now. I thought it would be cool to analyze these datasets combined and how the data from each platform compares to each other from last year, 2020.</h4>
+<hr />
+</div>
+</div>
+<div id="part-1-and-2-tidyingrearranging-widelong-joining-data" class="section level2">
+<h2>Part 1 and 2: Tidying/Rearranging Wide/Long, Joining Data</h2>
+<pre class="r"><code>usa_top_250 &lt;- read.csv(&quot;usa_top_500.csv&quot;)
+twitchdata &lt;- read.csv(&quot;twitchdata-update.csv&quot;)
+
+library(dplyr)
+library(tidyverse)
+
+top250Lang &lt;- usa_top_250 %&gt;% mutate(Language = &quot;English&quot;) %&gt;% 
+    mutate(Subscriptions = case_when(str_detect(Subscriptions, 
+        &quot;M&quot;) ~ as.numeric(str_extract(Subscriptions, &quot;[\\d\\.]+&quot;)) * 
+        1e+06, str_detect(Subscriptions, &quot;K&quot;) ~ as.numeric(str_extract(Subscriptions, 
+        &quot;[\\d\\.]+&quot;)) * 1000, ))
+
+TrueTwitchdata &lt;- twitchdata %&gt;% mutate(Peak.viewers = (Average.viewers * 
+    365))
+
+top250Lang$Views &lt;- gsub(&quot;,&quot;, &quot;&quot;, top250Lang$Views)
+top250Lang$Views &lt;- as.numeric(top250Lang$Views)
+
+Joined_Data &lt;- full_join(TrueTwitchdata, top250Lang, by = c(Channel = &quot;Ch_name&quot;, 
+    &quot;Language&quot;, Followers = &quot;Subscriptions&quot;, Peak.viewers = &quot;Views&quot;))
+
+head(Joined_Data)</code></pre>
+<pre><code>##     Channel Watch.time.Minutes. Stream.time.minutes. Peak.viewers
+## 1     xQcOW          6196161750               215250     10116340
+## 2  summit1g          6091677300               211845      9347650
+## 3    Gaules          5644590915               515280      4006240
+## 4  ESL_CSGO          3970318140               517740      2815610
+## 5      Tfue          3671000070               123660     10804730
+## 6 Asmongold          3668799075                82260     15481110
+##   Average.viewers Followers Followers.gained Views.gained Partnered Mature
+## 1           27716   3246298          1734810     93036735      True  False
+## 2           25610   5310163          1370184     89705964      True  False
+## 3           10976   1767635          1023779    102611607      True   True
+## 4            7714   3944850           703986    106546942      True  False
+## 5           29602   8938903          2068424     78998587      True  False
+## 6           42414   1563438           554201     61715781      True  False
+##     Language Rank Grade Uploads
+## 1    English &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;
+## 2    English &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;
+## 3 Portuguese &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;
+## 4    English &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;
+## 5    English &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;
+## 6    English &lt;NA&gt;  &lt;NA&gt;    &lt;NA&gt;</code></pre>
+<p><em>I joined my data using full_join since I had multiple variables that overlapped with one another in the data sets: Channel name, Language (which I set as English in the Youtube data since these are U.S. channels), Followers/Subscribers, and Viewers. I also created/replaced a column with the correct cumulative, peak viewers in the Twitch dataset by taking the average viewer data and multiplying it for every day in a year (since streamers stream daily, in most cases). I did not want to drop any rows since the datasets don’t fully share each other’s columns, so full_join was the safest and most convenient to run.</em></p>
+<pre class="r"><code>UntidyJoin &lt;- Joined_Data %&gt;% pivot_wider(names_from = Language, 
+    values_from = Language)
+
+TidyJoin &lt;- UntidyJoin %&gt;% pivot_longer(c(&quot;English&quot;:&quot;Swedish&quot;), 
+    names_to = &quot;Language&quot;, values_to = &quot;Language Spoken&quot;, values_drop_na = T) %&gt;% 
+    select(-c(&quot;Language Spoken&quot;)) %&gt;% relocate(&quot;Language&quot;, .after = &quot;Mature&quot;)
+
+TidyJoin %&gt;% select(c(Channel, Language))</code></pre>
+<pre><code>## # A tibble: 1,250 x 2
+##    Channel    Language  
+##    &lt;fct&gt;      &lt;chr&gt;     
+##  1 xQcOW      English   
+##  2 summit1g   English   
+##  3 Gaules     Portuguese
+##  4 ESL_CSGO   English   
+##  5 Tfue       English   
+##  6 Asmongold  English   
+##  7 NICKMERCS  English   
+##  8 Fextralife English   
+##  9 loltyler1  English   
+## 10 Anomaly    English   
+## # … with 1,240 more rows</code></pre>
+<p><em>Here, I untied and re-tidied my data since it was pretty tidy as is. I got all of the different languages under the <code>Language</code> column and made each of them their own. Then, I re-tidied my data by grabbing all the language columns and putting them back in place again, deleting the duplicate column once pivot_longer was complete.</em></p>
+<hr />
+</div>
+<div id="part-3-wrangling" class="section level2">
+<h2>Part 3: Wrangling</h2>
+<pre class="r"><code>TidyJoin$Uploads &lt;- gsub(&quot;,&quot;, &quot;&quot;, TidyJoin$Uploads)
+TidyJoin$Uploads &lt;- as.numeric(TidyJoin$Uploads)
+
+TidyJoin %&gt;% select(c(Channel, Peak.viewers)) %&gt;% arrange(desc(Peak.viewers))</code></pre>
+<pre><code>## # A tibble: 1,250 x 2
+##    Channel                             Peak.viewers
+##    &lt;fct&gt;                                      &lt;dbl&gt;
+##  1 Cocomelon - Nursery Rhymes           57088982878
+##  2 WWE                                  41314291369
+##  3 Ryan&#39;s World                         37876135112
+##  4 Movieclips                           35071065049
+##  5 Like Nastya                          30609490114
+##  6 PewDiePie                            25157596143
+##  7 Little Baby Bum - Nursery Rhymes &amp;…  24198545886
+##  8 ✿ Kids Diana Show                    24179259602
+##  9 JustinBieberVEVO                     20054844079
+## 10 TheEllenShow                         19487257933
+## # … with 1,240 more rows</code></pre>
+<pre class="r"><code>TidyJoin %&gt;% select(c(Channel, Peak.viewers)) %&gt;% summarize(mean = mean(Peak.viewers), 
+    sd = sd(Peak.viewers), min = min(Peak.viewers), max = max(Peak.viewers), 
+    count = n(), se = (sd/sqrt(count)))</code></pre>
+<pre><code>## # A tibble: 1 x 6
+##          mean          sd   min         max count         se
+##         &lt;dbl&gt;       &lt;dbl&gt; &lt;dbl&gt;       &lt;dbl&gt; &lt;int&gt;      &lt;dbl&gt;
+## 1 1130871304. 3921121387. 19031 57088982878  1250 110906061.</code></pre>
+<pre class="r"><code>TidyJoin %&gt;% select(c(Channel, Followers)) %&gt;% arrange(desc(Followers))</code></pre>
+<pre><code>## # A tibble: 1,250 x 2
+##    Channel                     Followers
+##    &lt;fct&gt;                           &lt;dbl&gt;
+##  1 PewDiePie                  104000000 
+##  2 Cocomelon - Nursery Rhymes  78200000 
+##  3 5-Minute Crafts             65900000.
+##  4 WWE                         57500000 
+##  5 Like Nastya                 52300000 
+##  6 ✿ Kids Diana Show           50900000 
+##  7 Dude Perfect                50300000 
+##  8 Marshmello                  44400000 
+##  9 Vlad and Nikita             37700000 
+## 10 TheEllenShow                37200000 
+## # … with 1,240 more rows</code></pre>
+<pre class="r"><code>TidyJoin %&gt;% select(c(Channel, Followers)) %&gt;% drop_na(Followers) %&gt;% 
+    summarize(mean = mean(Followers), sd = sd(Followers), min = min(Followers), 
+        max = max(Followers), count = n(), se = (sd/sqrt(count)))</code></pre>
+<pre><code>## # A tibble: 1 x 6
+##       mean       sd   min       max count      se
+##      &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt;     &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
+## 1 2582506. 7111447.  3660 104000000  1249 201223.</code></pre>
+<pre class="r"><code>TrueViewsTidyJoin &lt;- TidyJoin %&gt;% mutate(Uploads = replace_na(Uploads, 
+    1)) %&gt;% mutate(`Views/Uploads` = (Peak.viewers/Uploads))
+
+TrueViewsTidyJoin %&gt;% select(c(Channel, `Views/Uploads`)) %&gt;% 
+    drop_na(`Views/Uploads`) %&gt;% arrange(desc(`Views/Uploads`))</code></pre>
+<pre><code>## # A tibble: 1,250 x 2
+##    Channel          `Views/Uploads`
+##    &lt;fct&gt;                      &lt;dbl&gt;
+##  1 Bruno Mars            175292912.
+##  2 EminemVEVO            169446718.
+##  3 PostMaloneVEVO        159520492.
+##  4 TaylorSwiftVEVO       156960108.
+##  5 JustinBieberVEVO      136427511.
+##  6 KatyPerryVEVO         135736842.
+##  7 ArianaGrandeVevo      124095546.
+##  8 Maroon5VEVO           123164773.
+##  9 MalumaVEVO            116927615.
+## 10 KarolGVEVO            112326732.
+## # … with 1,240 more rows</code></pre>
+<pre class="r"><code>TrueViewsTidyJoin %&gt;% select(c(Channel, `Views/Uploads`)) %&gt;% 
+    summarize(mean = mean(`Views/Uploads`), sd = sd(`Views/Uploads`), 
+        min = min(`Views/Uploads`), max = max(`Views/Uploads`), 
+        count = n(), se = (sd/sqrt(count)))</code></pre>
+<pre><code>## # A tibble: 1 x 6
+##       mean        sd   min        max count      se
+##      &lt;dbl&gt;     &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
+## 1 4661893. 15701445.  595. 175292912.  1250 444104.</code></pre>
+<p><em>I created 6 summary statistics for Cumulative (peak) viewers, Followers (includes YT subscribers), and Views per Upload: mean, standard deviation, minimum, maximum, count, and standard error. There are a couple of things in common that each summary shares: Youtube is DOMINATING all of these categories. When arranged from top to bottom, the top entries displayed are all Youtube channels, with Twitch channels coming nowhere near close. However, from each of those lists, they varied amongst types of Youtube channels at the top: Personalities and Highlight clips from total (peak) views and followers while music channels dominated in views per upload. This makes sense because music videos have crazy, crazy view numbers that break into the billions and are listened to worldwide. When looking at the summary statistics, there is a massive amount of variation with obscenely large standard deviations. In reality, Youtube is just on a whole other level than Twitch still, despite its popularity.</em></p>
+<pre class="r"><code>HrPAV &lt;- TidyJoin %&gt;% mutate(HrPAV = (Watch.time.Minutes./Average.viewers)/60) %&gt;% 
+    relocate(&quot;HrPAV&quot;, .after = &quot;Followers&quot;)
+
+HrPAV %&gt;% group_by(Partnered) %&gt;% filter(Partnered %in% c(&quot;True&quot;, 
+    &quot;False&quot;)) %&gt;% summarize(mean = mean(HrPAV), sd = sd(HrPAV), 
+    min = min(HrPAV), max = max(HrPAV), count = n(), se = (sd/sqrt(count)))</code></pre>
+<pre><code>## # A tibble: 2 x 7
+##   Partnered  mean    sd   min   max count    se
+##   &lt;fct&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt; &lt;dbl&gt;
+## 1 False     2139. 2292.  58.2 8670.    22 489. 
+## 2 True      2103. 1412. 107.  8743.   978  45.1</code></pre>
+<pre class="r"><code>HrPAV %&gt;% group_by(Language) %&gt;% drop_na(HrPAV) %&gt;% summarize(mean = mean(HrPAV), 
+    sd = sd(HrPAV), min = min(HrPAV), max = max(HrPAV), count = n(), 
+    se = (sd/sqrt(count)))</code></pre>
+<pre><code>## # A tibble: 21 x 7
+##    Language   mean    sd    min   max count    se
+##    &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt; &lt;dbl&gt;
+##  1 Arabic     818.  567.  322.  1768.     5 254. 
+##  2 Chinese   2546. 1881.  206.  8638.    30 343. 
+##  3 Czech     2788. 1180. 1499.  4720.     6 482. 
+##  4 English   2190. 1428.   58.2 8743.   485  64.8
+##  5 Finnish   3501.   NA  3501.  3501.     1  NA  
+##  6 French    2268. 1829.  294.  8185.    66 225. 
+##  7 German    2068. 1368.  545.  8641.    49 195. 
+##  8 Greek     1959.   NA  1959.  1959.     1  NA  
+##  9 Hungarian 1990. 1004. 1280.  2699.     2 710. 
+## 10 Italian   2153.  894.  977.  4762.    17 217. 
+## # … with 11 more rows</code></pre>
+<p><em>Since the difference in followers and viewers are massive due to the Youtube data, I decided to play around to see if being an official Twitch partner affected watch time. An official partner is Twitch’s way of saying a creator is verified to have “good” content, generally. To do this, the most effective way is by measuring watch time per average viewer count as the algorithm on Twitch likes when viewers are consistent and have high retainment to the stream. So, I created a new column with Hours per average viewer (HrPAV) and found summary statistics for them. Looking at mean alone, Partner status among top streamers does not really affect this. Standard deviations are different, but this is probably due to the much lower sample size in a non-partner. This helps clarify that Twitch content creators overall are just overwhelmed by Youtube channels as of 2020. Do note though that this is a LOT of time to invest in Twitch streams, though. 2000 hours is roughly 83 straight days of watching a particular stream!</em></p>
+<p><em>Language shows little difference among Twitch streamers as well. Most means are in the 2000s for average hours per average viewer with the exception of Arabic, Greek, Hungarian, Swedish, Slovak, Other and Finnish, which have a small sample size in the data set. Though the Youtube dataset consists of only the top U.S. channels, this Language summary table from the Twitch dataset shows that across the board, viewership data from streamers worldwide is pretty similar, with not too dramatic variation like the various types of Youtube channels show in the first round of summary statistics I ran.</em></p>
+<hr />
+</div>
+<div id="part-4-visualization" class="section level2">
+<h2>Part 4: Visualization</h2>
+<pre class="r"><code>cormat &lt;- TrueViewsTidyJoin %&gt;% select(c(`Views/Uploads`, Peak.viewers, 
+    Followers)) %&gt;% select_if(is.numeric) %&gt;% cor(use = &quot;pair&quot;)
+
+tidycor &lt;- cormat %&gt;% as.data.frame %&gt;% rownames_to_column(&quot;var1&quot;) %&gt;% 
+    pivot_longer(-1, names_to = &quot;var2&quot;, values_to = &quot;correlation&quot;)
+tidycor</code></pre>
+<pre><code>## # A tibble: 9 x 3
+##   var1          var2          correlation
+##   &lt;chr&gt;         &lt;chr&gt;               &lt;dbl&gt;
+## 1 Views/Uploads Views/Uploads       1    
+## 2 Views/Uploads Peak.viewers        0.516
+## 3 Views/Uploads Followers           0.429
+## 4 Peak.viewers  Views/Uploads       0.516
+## 5 Peak.viewers  Peak.viewers        1    
+## 6 Peak.viewers  Followers           0.865
+## 7 Followers     Views/Uploads       0.429
+## 8 Followers     Peak.viewers        0.865
+## 9 Followers     Followers           1</code></pre>
+<pre class="r"><code>tidycor %&gt;% ggplot(aes(var1, var2, fill = correlation)) + geom_tile() + 
+    scale_fill_gradient2(low = &quot;yellow&quot;, high = &quot;red&quot;) + theme(axis.text.x = element_text(angle = 90, 
+    hjust = 1)) + geom_text(aes(label = round(correlation, 2))) + 
+    coord_fixed() + ggtitle(&quot;Correlation Heat Map&quot;) + theme(axis.text.x = element_text(size = 8), 
+    axis.text.y = element_text(size = 8))</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(TrueViewsTidyJoin, aes(Peak.viewers, Followers)) + geom_point(size = 3, 
+    aes(color = Partnered)) + scale_x_continuous(breaks = scales::pretty_breaks(n = 5)) + 
+    scale_y_continuous(breaks = scales::pretty_breaks(n = 5)) + 
+    xlim(0, 2e+10) + ylim(0, 5e+07) + geom_smooth() + ggtitle(&quot;Cumulative Views vs Followers (2020)&quot;) + 
+    ylab(&quot;Followers&quot;) + xlab(&quot;Cumulative Views&quot;)</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-5-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>HrPAVStats &lt;- HrPAV %&gt;% group_by(Language) %&gt;% drop_na(HrPAV) %&gt;% 
+    summarize(mean = mean(HrPAV), sd = sd(HrPAV), min = min(HrPAV), 
+        max = max(HrPAV), count = n(), se = (sd/sqrt(count)))
+
+ggplot(HrPAVStats, aes(x = Language, y = mean)) + geom_bar(stat = &quot;summary&quot;) + 
+    geom_errorbar(aes(x = Language, y = mean, ymin = mean - se, 
+        ymax = mean + se)) + ggtitle(&quot;Average Hours Per Viewer by Language (2020)&quot;) + 
+    ylab(&quot;Mean Hours Per Average Viewer&quot;) + xlab(&quot;Language&quot;) + 
+    coord_flip()</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-5-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p><em>In the correlation heat map, the only strong correlation value is between followers and peak viewers. To study that 0.87 correlation value for Cumulative (peak) Viewers and Followers in more detail, we will visualize it in a scatterplot with a trendline. For the other two moderate correlations of 0.43 and 0.52, this means there is somewhat of an assocation, but these values are not strong enough to make confident predictions unlike peak viewers and followers.</em></p>
+<p><em>In the scatterplot, it seems like the correlation between followers and cumulative viewers is carried by the Youtube channels (NA in <code>Partnered</code>). All the Twitch channels are on the leftmost fringe, showing how small they are in comparison to the Youtube titans around since the early 2010s. This trend line is essentially made by the Youtube data.</em></p>
+<p><em>The final barchart shows a visualization of the <code>Average Hours Per Viewer</code> by <code>Language</code> done earlier in the summary statistics. Without considering “Other” since it is a collection of languages not listed in the dataset, the most watched Hours by average viewer by langauge is the sole Finnish streamer, Thai, and Czech streamers. Though standard error shows it can vary, those are some dedicated viewers!</em></p>
+<hr />
+</div>
+<div id="part-5-clustering" class="section level2">
+<h2>Part 5: Clustering</h2>
+<pre class="r"><code>clust_dat &lt;- TrueViewsTidyJoin %&gt;% select(Peak.viewers, Followers, 
+    `Views/Uploads`) %&gt;% na.omit()
+
+library(cluster)
+
+
+pam_dat &lt;- clust_dat %&gt;% select(Peak.viewers, Followers, `Views/Uploads`)
+sil_width &lt;- vector()
+for (i in 2:10) {
+    pam_fit &lt;- pam(pam_dat, k = i)
+    sil_width[i] &lt;- pam_fit$silinfo$avg.width
+}
+ggplot() + geom_line(aes(x = 1:10, y = sil_width)) + scale_x_continuous(name = &quot;Clusters&quot;, 
+    breaks = 1:10) + ylab(&quot;Silhouette Width&quot;)</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pam2 &lt;- clust_dat %&gt;% scale %&gt;% pam(7)
+pam2</code></pre>
+<pre><code>## Medoids:
+##        ID Peak.viewers  Followers Views/Uploads
+## [1,]   20   -0.2873161 -0.1852925   -0.03301556
+## [2,] 1147    0.4956067  0.5775891    0.27254898
+## [3,]  926   -0.2881807 -0.3246211   -0.24893870
+## [4,] 1223    1.0660260  0.1937010    4.46735299
+## [5,] 1002    5.8755990  6.7943271    1.92790941
+## [6,] 1010    2.0730213  1.7320659    0.13291506
+## [7,] 1180    3.2231613  2.2242302    7.60387822
+## Clustering vector:
+##   [1] 1 1 1 1 2 1 1 1 1 1 1 1 1 2 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 3 1 1 1 3 1 1
+##  [38] 1 1 1 1 1 1 1 1 1 1 1 3 3 1 1 1 1 1 1 3 1 1 1 3 3 1 3 1 3 1 1 3 1 3 1 1 1
+##  [75] 1 1 1 1 1 1 1 4 1 1 1 1 3 1 1 3 1 3 1 3 1 3 2 1 1 1
+##  [ reached getOption(&quot;max.print&quot;) -- omitted 1149 entries ]
+## Objective function:
+##     build      swap 
+## 0.2602994 0.2535253 
+## 
+## Available components:
+##  [1] &quot;medoids&quot;    &quot;id.med&quot;     &quot;clustering&quot; &quot;objective&quot;  &quot;isolation&quot; 
+##  [6] &quot;clusinfo&quot;   &quot;silinfo&quot;    &quot;diss&quot;       &quot;call&quot;       &quot;data&quot;</code></pre>
+<pre class="r"><code>final &lt;- clust_dat %&gt;% mutate(cluster = pam2$clustering)
+
+library(plotly)
+final %&gt;% plot_ly(x = ~Peak.viewers, y = ~Followers, z = ~`Views/Uploads`, 
+    color = ~cluster, type = &quot;scatter3d&quot;, mode = &quot;markers&quot;)</code></pre>
+<div id="htmlwidget-1" style="width:672px;height:480px;" class="plotly html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"visdat":{"813d671fd6ed":["function () ","plotlyVisDat"]},"cur_data":"813d671fd6ed","attrs":{"813d671fd6ed":{"x":{},"y":{},"z":{},"mode":"markers","color":{},"alpha_stroke":1,"sizes":[10,100],"spans":[1,20],"type":"scatter3d"}},"layout":{"margin":{"b":40,"l":60,"t":25,"r":10},"scene":{"xaxis":{"title":"Peak.viewers"},"yaxis":{"title":"Followers"},"zaxis":{"title":"`Views/Uploads`"}},"hovermode":"closest","showlegend":false,"legend":{"yanchor":"top","y":0.5}},"source":"A","config":{"showSendToCloud":false},"data":[{"x":[10116340,9347650,4006240,2815610,10804730,15481110,8826065,6929525,8169065,4517605,9367360,7934735,7650400,15676020,19704890,12232610,7175535,4453365,7139400,4140195,4513955,14544520,6489335,8684810,8977175,10543755,4696820,3095565,4697185,2457910,1163255,3923750,4095300,3033515,1102300,3429540,5994030,3378440,10522950,7115675,3550720,16957535,4276705,8335505,3327705,2944090,13150950,3843815,2388195,961775,4813985,4738430,13171390,6212300,4743540,3169295,2438565,3094835,9460070,3669345,1160700,1508910,2975480,2414840,3918275,1829745,2472875,3541230,1896175,4725655,2158245,3679200,3119290,10933940,2674355,1825365,2883135,4210275,3097025,3370775,2603910,53889695,6518900,2391845,3838340,3875570,2034145,2595880,3755850,2262270,5849490,1332980,3013075,1509275,2640410,1603445,10808380,8055550,5181175,2211900,3368585,2618145,3148855,2810135,6414145,2204235,1946545,657730,3016360,46074680,1344295,12093180,2620700,2302785,1609650,1346120,1694330,9011485,2461195,2309720,809205,4826760,1796530,1795435,1400140,1628995,2280885,1654910,2236355,1884495,7029900,496765,4169395,4801210,1720610,2698810,1193550,1935595,1421310,1496500,1613300,3878490,505160,1946180,2980225,509905,1903840,3255435,2137440,1403790,2011880,2168465,934400,1185155,1166905,1251585,2216645,2132695,436540,1664400,2171020,1719150,1269470,1520955,1607095,579620,1217640,2714870,1167635,5264395,4777485,6383120,791320,1307065,2223215,1316555,3497795,3259085,1442845,2585295,1038060,708465,1514750,793875,1103760,1474600,2611575,1414375,2055680,1251950,1482630,1689585,1022365,1597970,1014335,1841060,6456485,2235625,3516045,1821350,1887780,1959320,1442845,1922820,1819525,2104955,1370940,5295785,1133325,906295,1079305,1150480,9029735,1374590,2477985,1408535,1116535,2309720,1280055,10736110,6635700,1864055,1000465,1457080,1836680,3068555,2418855,657730,1063610,1208880,1284435,2757210,328500,931480,2051665,1295750,5622825,1031125,873080,1142815,1228225,1535555,322660,1675715,2914525,1162160,1127120,857020,1125660,2333810,532900,2469955,3067825,2492585,927100,1185155,3396690,2615225,1246110,819060,2106780,1451605,1726815,2069915,639115,1690680,997545,639845,1576435,1540665,909580,1223480,1169095,1530445,1018715,848990,1244650,930385,1195740,2794440,1049740,961775,4991375,387265,1513655,1011780,920895,690215,887315,1802735,1208515,1383715,813220,704815,1020540,1761490,785845,1821715,991705,1448685,786210,967250,872715,10433160,1869895,1766965,254040,690580,459170,828185,2383450,843515,657365,650430,1110695,712845,991705,906660,2480175,7209845,824900,578160,1300495,998275,1419485,619040,1220560,1354515,2078675,1241730,968345,742410,1114710,803730,1363275,4643895,2266650,798985,2084515,1885225,919435,1007765,286525,794240,971995,1089160,1866610,553340,967980,1945815,1403790,582175,743870,2051300,973820,678170,2065900,1641040,605900,936590,8904175,1565120,904470,4275245,619040,1070910,731460,1343200,1420945,552975,1882670,569400,758835,1400870,1518035,667950,4442415,756280,1134785,4877860,877095,453695,1797990,419385,1062880,1241365,457710,1034410,1037695,532900,831835,640940,205130,636560,3548530,655540,1121645,208415,1036600,899725,866875,1562565,994990,1397220,688390,3307630,725985,789860,1121645,1020175,723795,694960,1615490,724525,933305,294555,1111790,198195,601885,847530,698610,1149750,876365,1233335,746425,3610580,1321300,2138170,8077450,584365,923450,734745,673060,189800,1742145,1441020,801540,1432990,1094635,517570,804825,1199755,695690,405150,4687695,850815,923450,734380,775260,581445,805555,617580,3394865,1186980,1368020,804460,199655,1201580,612470,2512295,2923650,1491755,1051930,1417660,589475,833660,969075,556260,809205,173740,852640,1313635,659920,820885,1467665,670870,473405,3316390,1278230,921990,497495,1006305,519030,4401170,572685,949730,1448320,561005,820155,7183565,1008130,675615,1539935,1446860,1075655,1158145,2947375,235060,1396855,1008860,516110,1611475,1099015,402960,879650,486545,608820,1205230,373030,462820,767595,493845,813950,715765,605535,734380,794970,573780,1208150,425590,4903775,1218005,812855,662840,715035,783290,846070,651890,585095,871255,864685,662110,1367290,439825,284700,846070,823440,2114080,845705,890965,767960,491655,979295,638385,396755,1044995,515380,2745530,771975,3708765,633275,374855,601155,797525,1342470,542390,468660,817235,506985,667220,662840,1558185,817235,408435,680725,764675,2381260,327770,3165645,356970,585095,403325,535090,981120,526695,953380,976375,947905,154030,513555,415735,548595,797160,630720,1932675,1626075,569035,1014335,548230,453695,1992535,490195,512095,578890,1091715,563195,784385,439825,586920,990610,744235,579985,1500515,440920,705545,146730,502605,3354350,378505,609550,511730,482895,501510,342005,796065,1971365,746425,511365,367920,3712050,501145,354415,538375,1620600,989880,362080,667220,497495,605535,442745,516840,1538475,1622425,383980,752265,609915,838040,405515,1058500,664300,451140,136875,731460,480705,763580,762850,699705,625975,471215,360255,685835,174835,645320,894980,738395,652620,333245,232140,559910,2074660,774530,495305,1934500,492385,479245,456250,375585,3059795,3713145,6900690,470120,1934500,1063245,657730,508810,752265,431795,411355,913960,1465475,413545,2706110,332150,403325,654445,882935,572685,665760,775260,547500,466835,624515,455520,268275,1556360,1632645,704085,1124930,169725,622690,609185,563560,739855,342735,619405,1656370,458075,1670240,684740,625245,461360,2361185,429240,363540,509905,394565,688025,400040,538375,853370,2002025,1554535,535090,459535,806650,875635,5651295,392740,331420,522680,1497595,538375,320835,388360,1701995,419750,331785,664665,486545,451505,908120,559910,1025285,1258885,486180,408070,114245,1593225,688390,1566945,1673890,355510,887315,540565,504795,578890,337625,740220,114610,1936325,630355,1097190,373395,794605,406975,1146465,478880,661380,597870,354415,432890,506620,290540,613565,1093905,2079405,450045,1696155,460995,409895,962870,594950,327405,638020,617580,653350,348575,439825,823440,511000,562465,475230,2455720,981850,426685,966155,624515,585825,648605,443840,2140360,642035,768690,652255,467565,834390,398945,448585,357700,974185,817600,8159940,401865,257690,502970,485085,1933040,453695,390550,1490295,430700,1783390,368650,673425,407340,1850550,463550,309885,108405,415370,1053025,598965,533630,416830,427415,397850,392010,234330,459900,432525,262435,2094735,596775,570495,827820,477785,1615855,435080,422305,404055,1103760,707005,880745,4269040,269005,420845,415005,532170,655540,767595,549325,445300,409165,362080,689485,426685,450410,1350500,573780,396025,629260,812125,355875,924545,1686665,389820,634735,419385,423035,938415,2651725,265720,1059230,611010,558815,781100,391280,1473505,306235,555530,98915,401865,599695,351860,287985,239440,581080,434350,2606465,249295,1013605,568305,450775,284335,464645,409530,541660,392375,207685,300760,579985,523410,493115,361715,1589575,193085,1122740,375950,1708200,615025,467930,471945,374855,275940,3181705,748615,390550,7262405,511000,369380,302585,1134055,2422140,1120185,318280,348210,114975,384345,333975,335070,425225,440555,706640,531805,491655,950095,634005,527060,475960,371205,1111425,5015465,327405,578160,357700,535455,357335,289445,748980,793510,611010,414640,608090,685470,938050,451505,690215,356240,291270,520855,511000,318280,286890,1518035,1653450,410260,337260,712115,888410,455155,319375,633640,536550,118990,310250,835485,408070,1465840,2995920,447855,12896545,235060,85775,264625,434350,3322960,289445,206955,420845,439825,57088982878,24179259602,30609490114,35071065049,18086626003,9308419202,721166331,41314291369,24198545886,9262978917,11563409761,37876135112,338893352,7084814005,292558565,14535722923,12210596587,265054681,1411777830,229188970,13394203834,10109462014,2779417154,2430317698,228364949,8712854805,193927,13752694218,3464951946,1831140499,19487257933,184216702,11970112005,649542629,6902293576,9583028549,14288765457,2893777308,8938545921,8260929309,2239134563,6420813993,13681259948,4652542907,227187186,4670877238,1366569686,5582952509,143930192,25157596143,10872226457,5727882477,5062432745,3119236718,3803857236,451219599,1142595499,7629963889,5239790749,5127703360,10285188919,2470962330,287423785,4776726665,10733551234,5137691581,3084582685,5616336602,20054844079,112485558,4034410098,17489918416,1926486551,4855934046,7526722959,2812242699,6460042465,2422483576,7303978008,3274157773,15333843087,7479947489,1948750883,6270127438,5543588938,5564654726,335015490,17622620073,6798810896,85606349,84752338,3152745703,12403625757,2474172757,3269033779,9677111579,8562764673,1196711742,8418255460,4454801002,565854848,14902937556,7112390391,19003157944,2886717544,6424714474,4685597912,82660226,74012199,2820436005,10313452627,3740269700,3243317052,2572452086,1457670755,5278472831,6723358671,6432286411,14572417782,18521292799,847920075,2857108628,575436083,12957305320,6153582111,12833230950,10570057554,3183684968,9006233886,65854640,2604990098,12955544342,588948659,1752422909,4043478018,2837614173,4417276985,7541427889,4945135238,2714887685,4867458159,4794380161,16676443187,4081666839,954774050,1003919696,3075292472,1914353389,1147395017,348357389,1074386593,2094849967,5192625047,6324024373,3766076632,61853211,448481642,5532173091,2889833600,1984486846,1043336402,58499607,3968543242,2651735671,2722537315,3011024787,8622216793,3221661543,55304713,3894119169,66322766,4731893792,2795956050,5032134204,6567008264,977422472,10271393512,2290507631,3003784988,13774605642,52593262,66882000,3731137778,1203443935,531629398,3205447749,2287517380,3722789535,4647192559,50885498,2593105144,5934255,1708329046,1745512824,819129465,50421233,6497087401,5737968818,463155177,1811553780,1082065445,49265311,714735427,798348749,2732029996,19031,2309475541,47873047,1424441230,6323266025,11744625122,1614720210,834649163,6909644168,3349006076,46103336,1843324249,210217756,92030003,4363533277,1782086872,10278405553,5312862669,6693130193,799239408,1955406477,46455473,821463,3153953735,4445715846,3460494576,5116047550,2887918630,1860794238,42845983,202751119,1103042457,3095826656,9472284126,2751325244,10661706891,13212820457,936377700,2054976464,9396425529,464543675,322073020,8088860682,3056238877],"y":[3246298,5310163,1767635,3944850,8938903,1563438,4074287,508816,3530767,2607076,5265659,2666382,4487489,5751354,3983847,2911316,2786162,494445,3445134,1264808,434200,619382,2411995,4450718,1260160,3795667,1792625,616168,385250,1724316,493207,2401580,923448,4115083,523758,6726893,1075101,1379123,973727,428284,3135667,1162746,381918,1894953,1008040,746865,934688,1878416,470123,923689,777510,2942212,1409120,492954,2035180,391726,580794,383892,1011924,428073,1478270,918654,778055,538532,1607134,299048,1659108,1660204,303671,587677,424374,1308165,919026,820675,2355063,1801697,591653,1501197,354579,833047,728097,663297,1216020,3611359,880728,614395,672403,4520305,773712,694253,5367605,883706,523512,401400,2641880,471970,7744066,1549722,1087377,1242014,425797,427926,346934,2601858,502467,1204773,1258173,149073,1293451,541644,185506,1796619,755116,784966,520519,248829,414951,501371,2138294,859439,85247,1223076,346566,2009972,1080764,1461767,675908,322895,175061,426716,2149306,67472,829700,825727,337177,772055,817365,446426,571183,591500,423002,1128907,961860,362297,1327059,121053,331632,1865296,594239,1134153,824676,374480,1707804,421256,457502,878934,514866,465887,324765,565661,770535,274875,2652018,1288969,302633,535211,134757,1852272,207484,1739112,1029203,697007,151098,220488,572789,372334,1372290,1422862,293595,1278824,659652,108623,521201,1519266,977377,165823,505361,1076499,1089830,1272899,287639,276694,276242,331744,337972,511431,571210,442493,308528,1258713,514693,542580,234884,1001350,95643,326118,1024814,999480,207369,570621,1748928,516113,840624,505362,893010,169505,182260,503346,1701314,2716270,2951980,489270,702744,171858,786983,1363222,479900,123954,767727,1536757,328473,658658,286184,267004,392024,302593,276488,132642,705098,222046,430649,604374,219431,797244,1472104,247303,315637,169973,180412,533250,244440,455444,258402,1068260,252495,361360,301033,703464,709343,159402,680023,1166681,542991,476096,349054,1251182,507730,270720,599036,849972,142427,668807,529814,1028544,299033,425072,648084,283232,787371,845158,149648,1233300,141684,216558,576903,175503,159763,309065,461534,244467,1055613,148568,504653,658323,247056,375749,1001739,763886,367223,341549,276421,1476226,512592,3558217,365714,269447,416018,366463,166594,179920,219539,598579,741652,236407,242969,314170,1717150,507418,885915,173861,390579,103260,428179,572005,279922,157620,598678,259624,141026,241746,261139,204605,339545,166726,850944,1681884,1093212,240206,786562,731808,85678,413458,327645,162917,164092,430755,575769,135687,330060,1448018,353687,182492,241602,895851,762778,462128,323364,309322,455056,482061,1287954,555334,212053,93616,60987,204451,254516,200953,336181,108784,248277,122486,369273,682899,388878,864324,1585519,252184,844681,1389835,170718,296481,294217,30986,260728,542892,125803,216106,267948,393639,526389,95477,79099,828298,1681615,68907,884661,224099,255949,34358,489623,3000509,1234662,289455,162040,688715,144898,167584,362062,656860,871405,380159,494643,330772,386804,203549,411993,82299,124835,152821,536792,134611,1191987,160226,546052,1340283,85097,573657,401222,215413,334591,159384,537519,31323,334594,688868,1433703,349467,292812,125615,151920,159117,398634,94751,1254031,166007,306920,342691,342850,284899,416329,461081,1194476,369667,196635,595939,105368,362794,182107,1651212,689582,275174,104526,431285,177741,449520,373375,171871,978645,173196,131966,722041,177595,835787,323856,89608,559647,609723,1751290,196136,360418,253065,247236,148183,252717,485787,359260,86544,475075,634982,251416,117425,331208,416920,284620,312566,279864,105341,107484,915023,305311,395859,463188,113658,259338,126282,240030,285474,665021,312799,317125,396862,253619,82289,234471,84234,431852,615027,250709,202779,638657,319860,309594,293665,518090,237214,611890,448316,82578,262104,240835,178477,171113,489174,205378,149158,214028,1015521,283503,1203324,251700,295771,53124,114376,70232,135446,118305,828896,308927,157820,391603,255595,76666,597890,988237,264192,102528,272391,200878,285509,1869993,317896,480299,111954,57205,412495,584831,251812,810622,180668,66198,140855,167132,410814,489577,252042,92634,193757,91608,255840,142209,127741,617665,146163,574927,1259972,206794,221461,220789,233263,857099,473157,328671,107476,527540,50286,238155,65688,71327,923377,212578,147351,955846,408958,112874,630255,377689,1189614,469944,76777,85764,267984,281664,205002,315264,131484,1041932,195405,308459,479368,165232,183885,184033,743040,279204,777611,269408,122694,318995,105730,110211,858427,393432,73584,116897,521166,559877,189654,1368076,202883,86590,93358,179552,150944,336093,220873,583881,91514,265814,124020,706212,187315,357385,775987,346631,149362,864087,168531,521938,348447,530822,194933,126546,39485,141167,154845,111646,71730,726730,1874932,80290,373484,576276,107835,306435,220585,42265,28818,336394,297359,237909,651994,391656,130341,386948,223756,256448,185784,329065,357844,579629,38410,215304,172386,143535,318230,100852,327888,173713,136885,183891,414577,320629,184078,94929,148702,356683,151788,185684,156597,292558,740343,428553,121984,1677690,74404,250786,116653,255944,101359,302419,861594,205041,94820,415795,204348,2137521,127151,235167,309300,622358,266853,37162,79204,547154,165906,312280,255156,103636,147542,260119,57634,287063,195423,375646,260125,788684,706537,88697,117084,186208,141898,442412,470873,137885,621921,380488,244207,3660,727059,813371,347824,160000,76050,108382,284563,153870,868738,352412,244133,169330,90359,178612,165439,795869,241924,701822,733628,170181,1474090,310100,391413,199618,405554,144116,375911,732192,183900,71596,57130,222796,77861,143916,972070,102225,179420,245715,114154,120494,199617,308815,151886,411346,272635,106365,277256,198818,231584,113551,269080,529357,203419,514073,146276,226974,106235,875087,70609,108895,142446,410224,826222,168463,200012,151000,665430,730326,127963,30413,71953,502696,207508,433078,85336,188378,64587,80566,46971,188176,287553,260779,730679,435872,79270,193058,33726,73409,100767,431935,135311,770030,34119,293748,903261,163956,226344,234312,171425,599828,510330,495558,242205,96728,120586,633443,51589,636568,358498,94551,301633,118276,173271,111003,460463,272944,77376,156726,88792,333858,529504,418710,93991,117916,99807,151266,496790,58531,354734,78971,309837,67707,137954,201657,153703,130323,66223,301329,190452,215360,206681,737161,534759,710277,100599,252913,285920,273504,86644,87530,200619,528396,296560,170668,122158,312944,35503,149775,375697,81928,511861,244437,198304,96691,30877,2115596,273980,68914,968465,229586,209700,227062,183960,342409,95371,79392,343191,70814,58786,93045,125775,272662,160387,348598,268942,85695,294277,258876,157981,206184,123451,344859,593564,155382,613135,99600,586475,86502,228316,82570,271202,145476,254401,59697,108410,193614,220819,1866339,79063,61206,229652,86561,75290,124479,274237,7102,127770,171107,646758,164902,361102,96343,767187,199880,69183,71579,331662,103069,124232,1151712,173807,146035,35930,166162,256353,48007,601927,213212,109068,547446,178553,78200000,50900000,52300000,36300000,37700000,15200000,2570000,57500000,27200000,14900000,26900000,24600000,2110000,12600000,1030000,20400000,14800000,838000,2680000,1110000,31800000,27600000,8490000,6790000,425000,9200000,825000,28900000,11400000,3940000,37200000,739000,18700000,3300000,15600000,24400000,13800000,5930000,10000000,17100000,3710000,18900000,24600000,9340000,909000,4620000,5340000,6860000,158000,104000000,7330000,8040000,13300000,11800000,8050000,1460000,3320000,10000000,10500000,33700000,12700000,7820000,1420000,7340000,8830000,6630000,10000000,3590000,32800000,224000,4730000,65900000,5050000,7820000,23500000,3080000,7130000,8120000,8400000,1520000,23100000,15300000,4670000,17400000,11100000,19100000,238000,18900000,13800000,312000,291000,9840000,22200000,4870000,10600000,16500000,44400000,3890000,9210000,6230000,1980000,15100000,16700000,25600000,5670000,9240000,5810000,308000,405000,8570000,50300000,5280000,10000000,4150000,3830000,5580000,5550000,15400000,25700000,26900000,3520000,3310000,9730000,9190000,13600000,25400000,28400000,2730000,10600000,12100,8500000,13200000,2000000,3560000,4560000,3410000,11000000,6730000,4010000,8870000,4130000,7700000,20000000,6010000,1600000,3340000,6690000,6760000,4450000,1230000,5850000,6090000,7700000,14500000,5440000,470000,2310000,7080000,11800000,6250000,413000,420000,12500000,8790000,7150000,5270000,10200000,8420000,199000,3600000,369000,5480000,7640000,2850000,34100000,7430000,13200000,4730000,9430000,18400000,144000,7100,9900000,2670000,136000,3450000,7760000,16100000,21100000,106000,2920000,182000,2160000,1860000,3180000,291000,6460000,1650000,2050000,4230000,5150000,76900,53900,765000,4840000,285000,4550000,294000,2360000,16400000,26900000,6470000,3160000,15200000,8810000,381000,3800000,740000,438000,24000000,6180000,12900000,3960000,7870000,3780000,5640000,6650,211000,11000000,5290000,18200000,21000000,11000000,132000,9550,61400,5130000,5780000,12300000,13600000,13300000,14600000,2510000,7980000,9000000,1740000,220000,15800000,10400000],"z":[10116340,9347650,4006240,2815610,10804730,15481110,8826065,6929525,8169065,4517605,9367360,7934735,7650400,15676020,19704890,12232610,7175535,4453365,7139400,4140195,4513955,14544520,6489335,8684810,8977175,10543755,4696820,3095565,4697185,2457910,1163255,3923750,4095300,3033515,1102300,3429540,5994030,3378440,10522950,7115675,3550720,16957535,4276705,8335505,3327705,2944090,13150950,3843815,2388195,961775,4813985,4738430,13171390,6212300,4743540,3169295,2438565,3094835,9460070,3669345,1160700,1508910,2975480,2414840,3918275,1829745,2472875,3541230,1896175,4725655,2158245,3679200,3119290,10933940,2674355,1825365,2883135,4210275,3097025,3370775,2603910,53889695,6518900,2391845,3838340,3875570,2034145,2595880,3755850,2262270,5849490,1332980,3013075,1509275,2640410,1603445,10808380,8055550,5181175,2211900,3368585,2618145,3148855,2810135,6414145,2204235,1946545,657730,3016360,46074680,1344295,12093180,2620700,2302785,1609650,1346120,1694330,9011485,2461195,2309720,809205,4826760,1796530,1795435,1400140,1628995,2280885,1654910,2236355,1884495,7029900,496765,4169395,4801210,1720610,2698810,1193550,1935595,1421310,1496500,1613300,3878490,505160,1946180,2980225,509905,1903840,3255435,2137440,1403790,2011880,2168465,934400,1185155,1166905,1251585,2216645,2132695,436540,1664400,2171020,1719150,1269470,1520955,1607095,579620,1217640,2714870,1167635,5264395,4777485,6383120,791320,1307065,2223215,1316555,3497795,3259085,1442845,2585295,1038060,708465,1514750,793875,1103760,1474600,2611575,1414375,2055680,1251950,1482630,1689585,1022365,1597970,1014335,1841060,6456485,2235625,3516045,1821350,1887780,1959320,1442845,1922820,1819525,2104955,1370940,5295785,1133325,906295,1079305,1150480,9029735,1374590,2477985,1408535,1116535,2309720,1280055,10736110,6635700,1864055,1000465,1457080,1836680,3068555,2418855,657730,1063610,1208880,1284435,2757210,328500,931480,2051665,1295750,5622825,1031125,873080,1142815,1228225,1535555,322660,1675715,2914525,1162160,1127120,857020,1125660,2333810,532900,2469955,3067825,2492585,927100,1185155,3396690,2615225,1246110,819060,2106780,1451605,1726815,2069915,639115,1690680,997545,639845,1576435,1540665,909580,1223480,1169095,1530445,1018715,848990,1244650,930385,1195740,2794440,1049740,961775,4991375,387265,1513655,1011780,920895,690215,887315,1802735,1208515,1383715,813220,704815,1020540,1761490,785845,1821715,991705,1448685,786210,967250,872715,10433160,1869895,1766965,254040,690580,459170,828185,2383450,843515,657365,650430,1110695,712845,991705,906660,2480175,7209845,824900,578160,1300495,998275,1419485,619040,1220560,1354515,2078675,1241730,968345,742410,1114710,803730,1363275,4643895,2266650,798985,2084515,1885225,919435,1007765,286525,794240,971995,1089160,1866610,553340,967980,1945815,1403790,582175,743870,2051300,973820,678170,2065900,1641040,605900,936590,8904175,1565120,904470,4275245,619040,1070910,731460,1343200,1420945,552975,1882670,569400,758835,1400870,1518035,667950,4442415,756280,1134785,4877860,877095,453695,1797990,419385,1062880,1241365,457710,1034410,1037695,532900,831835,640940,205130,636560,3548530,655540,1121645,208415,1036600,899725,866875,1562565,994990,1397220,688390,3307630,725985,789860,1121645,1020175,723795,694960,1615490,724525,933305,294555,1111790,198195,601885,847530,698610,1149750,876365,1233335,746425,3610580,1321300,2138170,8077450,584365,923450,734745,673060,189800,1742145,1441020,801540,1432990,1094635,517570,804825,1199755,695690,405150,4687695,850815,923450,734380,775260,581445,805555,617580,3394865,1186980,1368020,804460,199655,1201580,612470,2512295,2923650,1491755,1051930,1417660,589475,833660,969075,556260,809205,173740,852640,1313635,659920,820885,1467665,670870,473405,3316390,1278230,921990,497495,1006305,519030,4401170,572685,949730,1448320,561005,820155,7183565,1008130,675615,1539935,1446860,1075655,1158145,2947375,235060,1396855,1008860,516110,1611475,1099015,402960,879650,486545,608820,1205230,373030,462820,767595,493845,813950,715765,605535,734380,794970,573780,1208150,425590,4903775,1218005,812855,662840,715035,783290,846070,651890,585095,871255,864685,662110,1367290,439825,284700,846070,823440,2114080,845705,890965,767960,491655,979295,638385,396755,1044995,515380,2745530,771975,3708765,633275,374855,601155,797525,1342470,542390,468660,817235,506985,667220,662840,1558185,817235,408435,680725,764675,2381260,327770,3165645,356970,585095,403325,535090,981120,526695,953380,976375,947905,154030,513555,415735,548595,797160,630720,1932675,1626075,569035,1014335,548230,453695,1992535,490195,512095,578890,1091715,563195,784385,439825,586920,990610,744235,579985,1500515,440920,705545,146730,502605,3354350,378505,609550,511730,482895,501510,342005,796065,1971365,746425,511365,367920,3712050,501145,354415,538375,1620600,989880,362080,667220,497495,605535,442745,516840,1538475,1622425,383980,752265,609915,838040,405515,1058500,664300,451140,136875,731460,480705,763580,762850,699705,625975,471215,360255,685835,174835,645320,894980,738395,652620,333245,232140,559910,2074660,774530,495305,1934500,492385,479245,456250,375585,3059795,3713145,6900690,470120,1934500,1063245,657730,508810,752265,431795,411355,913960,1465475,413545,2706110,332150,403325,654445,882935,572685,665760,775260,547500,466835,624515,455520,268275,1556360,1632645,704085,1124930,169725,622690,609185,563560,739855,342735,619405,1656370,458075,1670240,684740,625245,461360,2361185,429240,363540,509905,394565,688025,400040,538375,853370,2002025,1554535,535090,459535,806650,875635,5651295,392740,331420,522680,1497595,538375,320835,388360,1701995,419750,331785,664665,486545,451505,908120,559910,1025285,1258885,486180,408070,114245,1593225,688390,1566945,1673890,355510,887315,540565,504795,578890,337625,740220,114610,1936325,630355,1097190,373395,794605,406975,1146465,478880,661380,597870,354415,432890,506620,290540,613565,1093905,2079405,450045,1696155,460995,409895,962870,594950,327405,638020,617580,653350,348575,439825,823440,511000,562465,475230,2455720,981850,426685,966155,624515,585825,648605,443840,2140360,642035,768690,652255,467565,834390,398945,448585,357700,974185,817600,8159940,401865,257690,502970,485085,1933040,453695,390550,1490295,430700,1783390,368650,673425,407340,1850550,463550,309885,108405,415370,1053025,598965,533630,416830,427415,397850,392010,234330,459900,432525,262435,2094735,596775,570495,827820,477785,1615855,435080,422305,404055,1103760,707005,880745,4269040,269005,420845,415005,532170,655540,767595,549325,445300,409165,362080,689485,426685,450410,1350500,573780,396025,629260,812125,355875,924545,1686665,389820,634735,419385,423035,938415,2651725,265720,1059230,611010,558815,781100,391280,1473505,306235,555530,98915,401865,599695,351860,287985,239440,581080,434350,2606465,249295,1013605,568305,450775,284335,464645,409530,541660,392375,207685,300760,579985,523410,493115,361715,1589575,193085,1122740,375950,1708200,615025,467930,471945,374855,275940,3181705,748615,390550,7262405,511000,369380,302585,1134055,2422140,1120185,318280,348210,114975,384345,333975,335070,425225,440555,706640,531805,491655,950095,634005,527060,475960,371205,1111425,5015465,327405,578160,357700,535455,357335,289445,748980,793510,611010,414640,608090,685470,938050,451505,690215,356240,291270,520855,511000,318280,286890,1518035,1653450,410260,337260,712115,888410,455155,319375,633640,536550,118990,310250,835485,408070,1465840,2995920,447855,12896545,235060,85775,264625,434350,3322960,289445,206955,420845,439825,110210391.656371,34941126.5924855,76332893.0523691,995884.400528169,82587333.347032,10786117.2676709,2267818.6509434,878522.792629766,20771284.0223176,6746525.06700656,25526290.8631347,22425183.606868,889483.86351706,7387710.11991658,14627928.25,35280880.881068,4094767.46713615,180801.28308322,2846326.27016129,1332494.01162791,8742952.89425587,33924369.1744966,11073375.1155378,13136852.4216216,736661.125806452,8827613.78419453,4617.30952380952,4503174.26915521,23254711.0469799,1909427.00625652,1670718.27271948,5756771.9375,10292443.6844368,13820055.9361702,25659083.9256506,42973222.1928251,10679196.9035874,532531.70923813,1233413.26355733,2034210.61536567,8992508.28514056,24138398.4699248,2306348.60890088,881664.375023688,8414340.22222222,602072.343129673,31780690.372093,191630.140351479,547263.087452471,6112146.77915452,557178.62230308,35799265.48125,14260373.9295775,18348451.2823529,13832208.1309091,1103226.40342298,10293653.1441441,1961430.30565553,10693450.5081633,7356819.74175036,3140515.70045802,15639002.0886076,1903468.77483444,18806010.492126,488866.425305156,2458225.63684211,18470555,112326732.04,136427510.741497,4326367.61538462,63300.7515297957,4359401.3998006,2875353.06119403,3232978.72569907,1881680.73975,1924875.22176591,1474558.88267519,6132869.81265823,140221.12169556,841902.230136282,3168804.10973342,11596817.8124031,11264455.9710983,5152117.86195563,10806216.2534113,2434232.16360455,5678228.6440678,106803758.018182,203404.963231114,115217.158815612,1033565.09756098,2930061.06226766,3114141.54079839,1846397.57985075,12062855.2730627,2078417.43535223,20290911.5473934,47488.5611904762,57659283.9726027,9684350.00434783,28292742.4,123164773.190083,11361645.9920128,135736842.457143,14433587.72,43419.6209585856,37787079.9354839,115608.707692308,361035.117073171,14316934.035533,45036911.0349345,6727103.77697842,8108292.63,538959.163209721,13014917.4553571,3463564.84973753,11612018.4300518,2463533.6694753,169446718.395349,156960108.466102,4958596.92982456,2618798.0091659,7473195.88311688,7630921.86101296,2583367.80478589,2761616.30083925,5574924.87025316,111955.725568801,8370105.84200743,3873802.35294118,12060139.3425926,4030972.10392035,5403198.70642202,9628697.3021978,17812678.4933921,813069.963610315,6401850.70289855,8082988.09110397,159520491.548387,315464.523007204,516879.914941064,1498243.8003125,2488278.60146225,72886907.8392857,5930273.60248447,4148428.49586777,8939803.69767442,16792573.5877193,3205014.01396648,10556284.5151515,5870964.98907104,3049272.14992722,8190260.32649842,12498071.8833992,6184033.87848933,417927.101351351,5824436.90909091,1233208.44650022,959758.751245433,4747576.18660287,2654800.00508906,449996.976923077,1086676.68181818,1144469.43072939,1243735.63956144,9096751.62235649,79835340.6759259,19886799.6481481,1202276.36956522,78607.1412220675,24775.0339932761,474946.681923116,3971528.48011364,109394221.826087,2024355.19852035,6388382.16993464,74923.361771657,2368673.86866598,16780921.7206704,124095546.324324,62685.6519666269,1216036.36363636,3008982.07903226,52694.8040546458,12657842.8095238,2698188.34090909,7942768.68055556,26216827.7112676,19363302.3291667,326189.08974359,90607.8180229917,118685.1,2786833.68026101,5404064.47058824,1244877.60638298,50320.5918163673,84377758.4545455,69132154.4337349,5034295.40217391,548125.198184569,3693056.12627986,835005.271186441,1125567.6015748,527659.450760079,10156245.33829,594.71875,279394.573070409,1408030.79411765,3312654.02325581,2593628.39417555,175292912.268657,11700871.0869565,5184156.29192547,4643578.06989247,9433819.93239437,81310.9982363316,2258975.79534314,1512357.95683453,2487297.37837838,28457.8875845382,18958370.9787234,8984620.23863636,74829051.6760563,784473.768518519,5589086.76923077,9538568.1804878,324863.447552448,102682.875,8087060.85897436,2348502.82408875,1567252.97826087,7382463.997114,6183979.93576017,29536416.4761905,32409.9720121029,3495708.94827586,2179925.80434783,1647592.685471,40653579.9399142,728634.863347458,75614942.4893617,116927614.663717,1614444.31034483,870383.932232105,58362891.4844721,919888.465346535,537684.507512521,16275373.6056338,4609711.73001508],"mode":"markers","type":"scatter3d","marker":{"colorbar":{"title":"cluster","ticklen":2},"cmin":1,"cmax":7,"colorscale":[["0","rgba(68,1,84,1)"],["0.0416666666666667","rgba(70,19,97,1)"],["0.0833333333333333","rgba(72,32,111,1)"],["0.125","rgba(71,45,122,1)"],["0.166666666666667","rgba(68,58,128,1)"],["0.208333333333333","rgba(64,70,135,1)"],["0.25","rgba(60,82,138,1)"],["0.291666666666667","rgba(56,93,140,1)"],["0.333333333333333","rgba(49,104,142,1)"],["0.375","rgba(46,114,142,1)"],["0.416666666666667","rgba(42,123,142,1)"],["0.458333333333333","rgba(38,133,141,1)"],["0.5","rgba(37,144,140,1)"],["0.541666666666667","rgba(33,154,138,1)"],["0.583333333333333","rgba(39,164,133,1)"],["0.625","rgba(47,174,127,1)"],["0.666666666666667","rgba(53,183,121,1)"],["0.708333333333333","rgba(79,191,110,1)"],["0.75","rgba(98,199,98,1)"],["0.791666666666667","rgba(119,207,85,1)"],["0.833333333333333","rgba(147,214,70,1)"],["0.875","rgba(172,220,52,1)"],["0.916666666666667","rgba(199,225,42,1)"],["0.958333333333333","rgba(226,228,40,1)"],["1","rgba(253,231,37,1)"]],"showscale":false,"color":[1,1,1,1,2,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,3,3,1,1,1,1,1,1,3,1,1,1,3,3,1,3,1,3,1,1,3,1,3,1,1,1,1,1,1,1,1,1,1,4,1,1,1,1,3,1,1,3,1,3,1,3,1,3,2,1,1,1,1,3,1,1,1,1,1,3,1,4,3,1,1,3,3,3,3,1,1,3,3,1,3,1,3,1,3,3,3,3,1,3,1,1,3,1,3,3,3,3,3,1,3,3,1,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,3,3,3,3,1,3,1,1,1,3,3,3,3,1,1,3,1,3,3,3,3,3,3,3,3,1,3,3,3,3,3,3,3,1,3,1,1,3,3,3,3,3,3,3,1,3,3,1,3,1,3,1,3,3,3,1,1,1,3,3,3,3,1,3,3,3,3,3,1,3,3,3,3,1,3,3,3,3,3,3,3,1,3,3,3,3,3,3,3,3,1,3,3,1,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,1,3,3,3,3,3,3,3,3,3,3,3,3,1,3,3,3,3,3,3,3,3,3,3,1,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,1,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,3,3,3,3,3,3,1,3,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,3,3,3,3,3,3,3,1,3,3,3,3,3,3,1,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,1,3,3,3,3,1,3,3,3,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,3,3,3,3,3,3,3,3,3,1,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,3,3,3,3,3,3,3,3,3,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,1,3,3,3,3,3,3,3,3,3,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,3,1,3,3,3,3,1,3,3,3,3,5,5,5,5,5,6,1,5,5,6,6,5,1,6,1,6,6,3,1,3,6,6,2,2,3,6,3,6,2,1,5,1,6,1,6,6,6,2,6,6,2,6,6,2,1,2,2,2,3,5,6,2,2,2,2,3,1,6,2,6,6,2,1,2,6,2,2,4,7,1,2,5,2,2,6,2,2,2,6,3,6,6,2,6,2,6,1,7,6,3,3,2,6,2,2,6,5,1,4,2,2,7,6,7,2,2,2,3,3,2,5,2,2,2,2,2,2,6,7,7,1,2,2,6,6,6,6,2,6,1,2,6,1,2,2,2,2,2,7,2,2,2,6,4,1,1,2,2,1,1,2,2,2,6,2,3,1,2,2,2,3,3,2,2,2,2,4,2,3,2,3,2,2,4,6,2,6,2,2,7,3,3,2,1,1,2,2,2,6,3,1,3,1,1,1,3,4,4,1,1,1,3,3,3,2,3,2,3,1,6,7,2,1,6,2,3,1,3,3,6,2,6,4,2,1,2,3,3,2,2,6,6,2,2,3,1,1,2,6,2,4,7,1,2,4,3,3,6,2],"line":{"colorbar":{"title":"","ticklen":2},"cmin":1,"cmax":7,"colorscale":[["0","rgba(68,1,84,1)"],["0.0416666666666667","rgba(70,19,97,1)"],["0.0833333333333333","rgba(72,32,111,1)"],["0.125","rgba(71,45,122,1)"],["0.166666666666667","rgba(68,58,128,1)"],["0.208333333333333","rgba(64,70,135,1)"],["0.25","rgba(60,82,138,1)"],["0.291666666666667","rgba(56,93,140,1)"],["0.333333333333333","rgba(49,104,142,1)"],["0.375","rgba(46,114,142,1)"],["0.416666666666667","rgba(42,123,142,1)"],["0.458333333333333","rgba(38,133,141,1)"],["0.5","rgba(37,144,140,1)"],["0.541666666666667","rgba(33,154,138,1)"],["0.583333333333333","rgba(39,164,133,1)"],["0.625","rgba(47,174,127,1)"],["0.666666666666667","rgba(53,183,121,1)"],["0.708333333333333","rgba(79,191,110,1)"],["0.75","rgba(98,199,98,1)"],["0.791666666666667","rgba(119,207,85,1)"],["0.833333333333333","rgba(147,214,70,1)"],["0.875","rgba(172,220,52,1)"],["0.916666666666667","rgba(199,225,42,1)"],["0.958333333333333","rgba(226,228,40,1)"],["1","rgba(253,231,37,1)"]],"showscale":false,"color":[1,1,1,1,2,1,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,3,1,1,1,3,1,1,1,1,1,1,1,1,1,1,1,1,1,3,3,1,1,1,1,1,1,3,1,1,1,3,3,1,3,1,3,1,1,3,1,3,1,1,1,1,1,1,1,1,1,1,4,1,1,1,1,3,1,1,3,1,3,1,3,1,3,2,1,1,1,1,3,1,1,1,1,1,3,1,4,3,1,1,3,3,3,3,1,1,3,3,1,3,1,3,1,3,3,3,3,1,3,1,1,3,1,3,3,3,3,3,1,3,3,1,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,3,3,3,3,1,3,1,1,1,3,3,3,3,1,1,3,1,3,3,3,3,3,3,3,3,1,3,3,3,3,3,3,3,1,3,1,1,3,3,3,3,3,3,3,1,3,3,1,3,1,3,1,3,3,3,1,1,1,3,3,3,3,1,3,3,3,3,3,1,3,3,3,3,1,3,3,3,3,3,3,3,1,3,3,3,3,3,3,3,3,1,3,3,1,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,1,3,3,3,3,3,3,3,3,3,3,3,3,1,3,3,3,3,3,3,3,3,3,3,1,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,1,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,3,3,3,3,3,3,1,3,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,3,3,3,3,3,3,3,1,3,3,3,3,3,3,1,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,1,3,3,3,3,1,3,3,3,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,3,3,3,3,3,3,3,3,3,1,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,3,3,3,3,3,3,3,3,3,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,1,3,3,3,3,3,3,3,3,3,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,1,3,1,3,3,3,3,1,3,3,3,3,5,5,5,5,5,6,1,5,5,6,6,5,1,6,1,6,6,3,1,3,6,6,2,2,3,6,3,6,2,1,5,1,6,1,6,6,6,2,6,6,2,6,6,2,1,2,2,2,3,5,6,2,2,2,2,3,1,6,2,6,6,2,1,2,6,2,2,4,7,1,2,5,2,2,6,2,2,2,6,3,6,6,2,6,2,6,1,7,6,3,3,2,6,2,2,6,5,1,4,2,2,7,6,7,2,2,2,3,3,2,5,2,2,2,2,2,2,6,7,7,1,2,2,6,6,6,6,2,6,1,2,6,1,2,2,2,2,2,7,2,2,2,6,4,1,1,2,2,1,1,2,2,2,6,2,3,1,2,2,2,3,3,2,2,2,2,4,2,3,2,3,2,2,4,6,2,6,2,2,7,3,3,2,1,1,2,2,2,6,3,1,3,1,1,1,3,4,4,1,1,1,3,3,3,2,3,2,3,1,6,7,2,1,6,2,3,1,3,3,6,2,6,4,2,1,2,3,3,2,2,6,6,2,2,3,1,1,2,6,2,4,7,1,2,4,3,3,6,2]}},"frame":null},{"x":[19031,57088982878],"y":[3660,104000000],"type":"scatter3d","mode":"markers","opacity":0,"hoverinfo":"none","showlegend":false,"marker":{"colorbar":{"title":"cluster","ticklen":2,"len":0.5,"lenmode":"fraction","y":1,"yanchor":"top"},"cmin":1,"cmax":7,"colorscale":[["0","rgba(68,1,84,1)"],["0.0416666666666667","rgba(70,19,97,1)"],["0.0833333333333333","rgba(72,32,111,1)"],["0.125","rgba(71,45,122,1)"],["0.166666666666667","rgba(68,58,128,1)"],["0.208333333333333","rgba(64,70,135,1)"],["0.25","rgba(60,82,138,1)"],["0.291666666666667","rgba(56,93,140,1)"],["0.333333333333333","rgba(49,104,142,1)"],["0.375","rgba(46,114,142,1)"],["0.416666666666667","rgba(42,123,142,1)"],["0.458333333333333","rgba(38,133,141,1)"],["0.5","rgba(37,144,140,1)"],["0.541666666666667","rgba(33,154,138,1)"],["0.583333333333333","rgba(39,164,133,1)"],["0.625","rgba(47,174,127,1)"],["0.666666666666667","rgba(53,183,121,1)"],["0.708333333333333","rgba(79,191,110,1)"],["0.75","rgba(98,199,98,1)"],["0.791666666666667","rgba(119,207,85,1)"],["0.833333333333333","rgba(147,214,70,1)"],["0.875","rgba(172,220,52,1)"],["0.916666666666667","rgba(199,225,42,1)"],["0.958333333333333","rgba(226,228,40,1)"],["1","rgba(253,231,37,1)"]],"showscale":true,"color":[1,7],"line":{"color":"rgba(255,127,14,1)"}},"z":[594.71875,175292912.268657],"frame":null}],"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>library(GGally)
+ggpairs(final, columns = 1:3, aes(color = as.factor(cluster)))</code></pre>
+<p><img src="../../project/project1_files/figure-html/unnamed-chunk-6-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>pam2$silinfo$avg.width</code></pre>
+<pre><code>## [1] 0.591281</code></pre>
+<p><em>I used PAM to cluster my data using Peak (cumulative) viewers, Followers, and Views per Upload. I found that 7 clusters work best after analyzing the <code>Silhouette Width</code> graph and 7 clusters having the highest peak. Once visualized, the following results are around what I expected. The strongest correlation between Followers and Cumulative (peak) viewers shows Cluster 5 as those insanely massive Youtube channels that just break away from most of the other clusters such as long-term content creators, highlight channels, and child-friendly Youtube channels that amass tens of millions of views per video. Twitch channels tend to be all clumped up in all three graphs: Clusters 1, 2, and 3. The goodness of fit is shown with an average silhouette value of 0.59. It is moderate at best, which shows in the visualization of some clumped up clusters in the bottom left corners while 4 through 7 break away in various directions. In the 3D plot, this just goes to further reinforce the finding that the top content creators from Youtube and Twitch are still in completely different leagues when comparing their video statistics and followings. However, with streaming on the rise to this day, the two platforms could be more competitive in the coming years, especially with the time average viewers invest into their favorite streamers every day.</em></p>
+<hr />
+</div>
+
+            
+        <hr>         <div class="related-posts">
+                <h5>Related Posts</h5>
+                
+              </div> 
+            </div>
+          </div>
+
+   <hr>  <div class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div> 
+        </div>
+      </div>
+    </div>
+
+    
+    <footer>
+  <div id="footer">
+    <div class="container">
+      <p class="text-muted">&copy; All rights reserved. Powered by <a href="https://gohugo.io/">Hugo</a> and
+      <a href="http://www.github.com/nurlansu/hugo-sustain/">sustain</a> with ♥</p>
+    </div>
+  </div>
+</footer>
+<div class="footer"></div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="../../js/docs.min.js"></script>
+<script src="../../js/main.js"></script>
+
+<script src="../../js/ie10-viewport-bug-workaround.js"></script>
+
+
+    
+  </body>
+</html>

@@ -1,0 +1,294 @@
+---
+title: 'Project 2: Modeling, Testing, and Predicting'
+author: "Carlos Cisneros chc956"
+date: '5/7/21'
+output:
+  html_document:
+    toc: yes
+    toc_float:
+      collapsed: no
+      smooth_scroll: yes
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+hook_output = knit_hooks$get('output')
+knit_hooks$set(output = function(x, options) {
+  # this hook is used only when the linewidth option is not NULL
+  if (!is.null(n <- options$linewidth)) {
+    x = knitr:::split_lines(x)
+    # any lines wider than n should be wrapped
+    if (any(nchar(x) > n)) x = strwrap(x, width = n)
+    x = paste(x, collapse = '\n')
+  }
+  hook_output(x, options)
+})
+
+knitr::opts_chunk$set(echo = TRUE, eval = TRUE,fig.align="center",warning=FALSE,message=FALSE,fig.width=8, fig.height=5, linewidth=60)
+options(tibble.width = 100,width = 100)
+library(tidyverse)
+
+class_diag <- function(probs,truth){
+  #CONFUSION MATRIX: CALCULATE ACCURACY, TPR, TNR, PPV
+  
+  if(is.character(truth)==TRUE) truth<-as.factor(truth)
+  if(is.numeric(truth)==FALSE & is.logical(truth)==FALSE) truth<-as.numeric(truth)-1
+  
+  tab<-table(factor(probs>.5,levels=c("FALSE","TRUE")),factor(truth, levels=c(0,1)))
+  acc=sum(diag(tab))/sum(tab)
+  sens=tab[2,2]/colSums(tab)[2]
+  spec=tab[1,1]/colSums(tab)[1]
+  ppv=tab[2,2]/rowSums(tab)[2]
+  
+  #CALCULATE EXACT AUC
+  ord<-order(probs, decreasing=TRUE)
+  probs <- probs[ord]; truth <- truth[ord]
+  
+  TPR=cumsum(truth)/max(1,sum(truth)) 
+  FPR=cumsum(!truth)/max(1,sum(!truth))
+  
+  dup <-c(probs[-1]>=probs[-length(probs)], FALSE)
+  TPR <-c(0,TPR[!dup],1); FPR<-c(0,FPR[!dup],1)
+  n <- length(TPR)
+  auc <- sum( ((TPR[-1]+TPR[-n])/2) * (FPR[-1]-FPR[-n]) )
+
+  data.frame(acc,sens,spec,ppv,auc)
+}
+```
+
+## Introduction
+```{r}
+strokedat<-read_csv("healthcare-dataset-stroke-data.csv")
+
+strokedat[strokedat == "N/A"]  <- NA
+
+
+strokedat<- strokedat %>% na.omit()
+
+head(strokedat)
+
+
+```
+*This Project is going to be using a dataset that attempts to predict how likely a patient is to have a stroke based on various conditions/variables. This includes the following: gender, age, hypertension, marriage status, work status, residence type, average glucose level, BMI, smoking status, and stroke status. However, though the dataset is based on at-risk individuals for strokes, the conditions of hypertension and heart disease were recorded as well. There are 4909 entries with NAs removed.*
+
+## MANOVA
+```{r}
+library(rstatix)
+library(tidyverse)
+library(dplyr)
+
+strokedat$bmi <- as.numeric(as.character(strokedat$bmi))
+
+#MANOVA with smoking status
+man1<-manova(cbind(age,bmi,hypertension,heart_disease,avg_glucose_level,stroke)~smoking_status, data=strokedat)
+
+summary(man1)
+
+#6 ANOVAs
+summary.aov(man1)
+
+#36 Pairwise t-tests
+pairwise.t.test(strokedat$age,strokedat$smoking_status, p.adj="none")
+
+pairwise.t.test(strokedat$bmi,strokedat$smoking_status, p.adj="none")
+
+pairwise.t.test(strokedat$heart_disease,strokedat$smoking_status, p.adj="none")
+
+pairwise.t.test(strokedat$hypertension,strokedat$smoking_status, p.adj="none")
+
+pairwise.t.test(strokedat$avg_glucose_level,strokedat$smoking_status, p.adj="none")
+
+pairwise.t.test(strokedat$stroke,strokedat$smoking_status, p.adj="none")
+
+#Overall Type I Error Rate
+1-.95^43
+
+#Bonferroni Adjustment
+.05/43
+```
+*To begin, I decided to conduct a MANOVA on smoking status with my numeric predictors because I felt it would be interesting to see if some health statistics are correlated with smoking habits, especially strokes. The results of the MANOVA show that there is a mean difference in at least one of our numeric variables across smoker status (p < 0.05). I then conducted 6 ANOVAs on my numeric variables and find that all of them show a mean difference across groups with their extremely small p-values. I then conducted individual post-hoc t-tests for each numeric variable (36 total). With this many tests, there is an 88.98% chance that we have a Type I error when unadjusted (which is very high and not good)! Conducting a bonferroni adjustment based on the amount of tests reveals the corrected threshold for significance at a value of 0.00116. When adjusted for, there are 21 significant comparisons. 17 of them are the comparisons between the "Unknown" smoking status and the other 3 categories. This makes sense because it is more than likely that this group is just a mixed bag of anyone as at the time of data collection, this question may not have been asked of the patient. I do believe that most of the assumptions for MANOVA were met as this dataset is massive with thousands of samples. However, I fear there could be a few outliers in this dataset, which MANOVA is sensitive to. It is possible for that assumption to be violated since in the world of medicine, unusual patients are not uncommon.*
+
+## Randomization Test
+```{r}
+strokedat<- strokedat %>% mutate(strokeNB = replace(stroke, stroke == 1, "YES")) 
+
+strokedat$strokeNB[strokedat$strokeNB == 0] <- "NO"
+
+#Mean Difference randomization test
+means<-vector()
+means2<-vector()
+
+for(i in 1:5000){
+samp<-sample(strokedat[strokedat$strokeNB=="YES",]$avg_glucose_level,replace=T)
+means[i]<-mean(samp)
+samp2<-sample(strokedat[strokedat$strokeNB=="NO",]$avg_glucose_level,replace=T)
+means2[i]<-mean(samp2)
+}
+
+#Save the meanDiff
+meanDiff<-means-means2
+
+quantile(meanDiff,c(.025, .975))
+
+#Verified with an Independent t-test
+t.test(strokedat[strokedat$strokeNB=="YES",]$avg_glucose_level, strokedat[strokedat$strokeNB=="NO",]$avg_glucose_level, var.equal = F)
+
+#Plotted null distribution with the upper and lower cutoffs 
+ggplot()+geom_histogram(aes(meanDiff))+geom_vline(xintercept=quantile(meanDiff,c(.025,.975)))
+
+```
+*I conducted a randomization test on the mean difference for average glucose levels between patients who did or did not have a stroke. The null hypothesis is that the mean average glucose levels are the same across both patients who did or did not have a stroke while the alternative is that the levels do differ. After completing the test, it seems that 95% of average glucose levels between patients who did or did not have a stroke have a mean difference between 22.28 and 29.13 mmol/L. The significance of this was verified by a t-test, which has a significant p-value of 3.13E-11.*
+
+## Linear Regression
+```{r}
+library(lmtest)
+library(sandwich)
+
+#Centering Numerics
+strokedat$agecent <- strokedat$age - mean(strokedat$age, na.rm = T)
+strokedat$glucent <- strokedat$avg_glucose_level - mean(strokedat$avg_glucose_level, na.rm = T)
+
+#Linear Regression. Centered Age and Avg. Glucose effects on BMI
+fit1<-lm(data =strokedat, bmi~agecent*glucent)
+
+summary(fit1)
+
+#Regression Plot
+ggplot(strokedat, aes(age, avg_glucose_level)) + geom_point() + geom_smooth(method="lm")
+
+
+resids<-fit1$residuals
+fitvals<-fit1$fitted.values
+
+#Linearity/Homoskedasticity
+ggplot()+geom_point(aes(fitvals,resids))+geom_hline(yintercept=0, color='red')
+
+#Normality
+shapiro.test(resids)
+
+#Robust Standard Errors
+coeftest(fit1, vcov=vcovHC(fit1))
+```
+*Here, I decided to run a linear regression on bmi to see if centered age and average glucose significantly affect it in patients. When running the summary on the model, every year increase in age increases bmi by 0.106 kg/m2, every 1 mmol/L increase in average glucose level increases bmi by 0.022 kg/m2, and every one unit increase in the interaction of age and average glucose decreases bmi by 0.0003 kg/m2. The model explains a proportion of 0.1216 variation in the outcome. In regards to assumptions, visually, it appears that linearity and homoskedacity are okay. However, normality is violated due results from the Shapiro-Wilk test (p < 0.05). With robust standard errors, all predictors are still significant, showing no change from the original linear regression model. This is expected since the original model cleared the homoskedacity assumption.*
+
+## Bootstrapped Standard Errors
+```{r}
+samp_distn<-replicate(5000, {  
+  boot_dat <- sample_frac(strokedat, replace=T)
+fit3 <- lm(bmi~agecent*glucent, data=boot_dat) 
+coef(fit3)
+}) 
+## Estimated SEs
+samp_distn %>% t %>% as.data.frame %>% summarize_all(sd)
+
+#Non-Bootstrapped SE
+summary(fit1)$coef[,1:2]
+
+
+bptest(fit1)
+```
+*When comparing the results of the bootstrapped standard errors to the original model, they are incredibly similar to one another. The p-value that assesses for homoskedacity in the original model is quite large (0.3723) as well as the one for normality being very, VERY small (p < 0.05, normality violated by Shapiro-Wilk test in previous section). Because of the close similarity in both the original and bootstraped SEs, it is fair to assume that the p-values for the bootstrapped model will also be close to what was calculated originally.*
+
+## Logistic Regression
+```{r}
+#Logistic Regession
+fit2<-glm(stroke~avg_glucose_level+age,data=strokedat,family=binomial(link="logit"))
+
+#Coefficient Estimates Exponentiated
+exp(coef(fit2))
+
+#Classification Diagnostics
+prob<-predict(fit2,type="response")
+
+class_diag(prob,strokedat$stroke)
+
+#Confusion Matrix
+table(predict=as.numeric(prob>.5),truth=strokedat$stroke)%>%addmargins
+
+#Density Plot of log-odds
+strokedat$logit<-predict(fit2)
+
+strokedat$outcome<-factor(strokedat$strokeNB,levels=c("YES","NO"))
+
+ggplot(strokedat,aes(logit, fill=outcome))+geom_density(alpha=.3)+
+  geom_vline(xintercept=0,lty=2)
+
+#ROC Curve
+library(plotROC)
+
+ROCplot<-ggplot(strokedat)+geom_roc(aes(d=outcome,m=prob), n.cuts=0) 
+
+ROCplot
+#AUC
+calc_auc(ROCplot)
+```
+*For my logistic regression, I now attempted to predict strokes from some other predictors in the dataset: average glucose level and age. When fitted, the exponentiated coefficients tell us that for every unit increase of glucose level (mmol/L) and age (year), the odds of a stroke increase by 0.561% and 7.45%, respectively. Upon calculating the classification diagnostics for this model, we have an overall accuracy of 0.95, sensitivity of 0, specificity of 1, precision of NaN, and AUC of 0.84. I know what you're thinking: Sensitivity, specificity, and precision all seem a little weird. However, this makes sense in the model due to the vast majority of entries not being afflicted from a stroke. About 200 of the roughly 4900 have experienced a stroke before, so it is possible that in this dataset that strokes cannot be predicted from age and glucose level well enough on their own. Our model is also pretty good from having a decently high AUC value as well. Verified with a ROC plot, our AUC is the same at 0.84.*
+
+## Logistic Regression with Everything Else!
+```{r}
+strokeclean <- strokedat[,c(2:12)]
+
+head(strokeclean)
+
+#Logisitic Regression featuring the rest of the available predictors
+fit4<-glm(stroke~.,data=strokeclean,family=binomial(link="logit"))
+
+prob2<-predict(fit4,type="response")
+
+#Classification Diagnostics
+class_diag(prob2,strokedat$stroke)
+
+#10-fold CV
+k=10
+
+data <- strokeclean %>% sample_frac
+folds <- ntile(1:nrow(data),n=10) 
+
+diags<-NULL
+for(i in 1:k){
+  train <- data[folds!=i,] 
+  test <- data[folds==i,] 
+  truth <- test$stroke 
+  
+  fit5 <- glm(stroke~., data=strokeclean, family="binomial")
+  probs <- predict(fit5, newdata=test, type="response")
+  
+  diags<-rbind(diags,class_diag(probs,truth))
+}
+
+#Classification Diagnostics for 10-fold CV
+summarize_all(diags,mean)
+
+library(glmnet)
+
+#LASSO
+y<-as.matrix(strokeclean$stroke)
+x<-model.matrix(stroke~.,data=strokeclean)[,-1]
+
+cv<-cv.glmnet(x,y,family="binomial")
+lasso<-glmnet(x,y,family="binomial",lambda=cv$lambda.1se)
+
+coef(lasso)
+
+#10-fold CV with LASSO selected variables
+k=10
+
+data <- strokeclean %>% sample_frac
+folds <- ntile(1:nrow(data),n=10)
+
+diags<-NULL
+for(i in 1:k){
+  train <- data[folds!=i,]
+  test <- data[folds==i,]
+  truth <- test$stroke
+  
+  fit5 <- glm(stroke~age+hypertension+heart_disease+avg_glucose_level, data=strokeclean, family="binomial")
+  probs <- predict(fit5, newdata=test, type="response")
+  
+  diags<-rbind(diags,class_diag(probs,truth))
+}
+
+#Classification Diagnostics for LASSO 10-fold CV
+summarize_all(diags,mean)
+```
+*In the final logistic regression, I am now using 10 predictors from the dataset to see if they significantly predict the occurrence of strokes. With this set of classification diagnostics, we have a fairly similar accuracy and AUC (0.85) to last model. However, the sensitivity and specificity changed ever so slightly from 0 and 1, respectively. Precision now has a value of 0.5, meaning that R believes that now at least half of the patients who have had strokes were predicted correctly from the model. Unlike the previous model, now having the rest of the available predictors helped in predicting strokes more effectively, even if the change overall is minuscule. Performing a 10-fold CV gives an AUC of 0.86, which is quite close to the original model. After conducting a LASSO, the non-zero variables we will retain for the final, lasso-selected CV are: age, hypertension, heart disease, and average glucose level. From the lasso-selected CV, a similar, good AUC value is computed like the previous logistic regressions above: 0.85.*

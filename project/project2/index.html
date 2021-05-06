@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="author" content="Carlos Cisneros" />
+    
+    <link rel="shortcut icon" type="image/x-icon" href="../../img/favicon.ico">
+    <title>Project 2: Modeling, Testing, and Predicting</title>
+    <meta name="generator" content="Hugo 0.83.1" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="../../css/main.css" />
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:200,400,200bold,400old" />
+    
+    <!--[if lt IE 9]>
+			<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+			<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+		<![endif]-->
+
+    
+  </head>
+
+  <body>
+    <div id="wrap">
+      
+      <nav class="navbar navbar-default">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="../../"><i class="fa fa-home"></i></a>
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <div class="navbar-collapse collapse" id="navbar">
+      <ul class="nav navbar-nav navbar-right">
+      
+        
+        <li><a href="../../post/">BLOG</a></li>
+        
+        <li><a href="../../projects/">PROJECTS</a></li>
+        
+        <li><a href="../../resume/">RESUME</a></li>
+        
+      
+      </ul>
+    </div>
+  </div>
+</nav>
+
+      <div class="container">
+        <div class="blog-post">
+          <h3>
+            <strong><a href="../../project/project2/">Project 2: Modeling, Testing, and Predicting</a></strong>
+          </h3>
+        </div>
+ 
+<div class="blog-title">
+          <h4>
+         January 1, 0001 
+            &nbsp;&nbsp;
+            
+          </h4>
+        </div>
+
+        <div class="panel panel-default">
+          <div class="panel-body">
+            <div class="blogpost">
+              
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<pre class="r"><code>strokedat&lt;-read_csv(&quot;healthcare-dataset-stroke-data.csv&quot;)
+
+strokedat[strokedat == &quot;N/A&quot;]  &lt;- NA
+
+
+strokedat&lt;- strokedat %&gt;% na.omit()
+
+head(strokedat)</code></pre>
+<pre><code>## # A tibble: 6 x 12
+## id gender age hypertension heart_disease ever_married
+work_type Residence_type
+## &lt;dbl&gt; &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;
+## 1 9046 Male 67 0 1 Yes Private Urban
+## 2 31112 Male 80 0 1 Yes Private Rural
+## 3 60182 Female 49 0 0 Yes Private Urban
+## 4 1665 Female 79 1 0 Yes Self-emp… Rural
+## 5 56669 Male 81 0 0 Yes Private Urban
+## 6 53882 Male 74 1 1 Yes Private Rural
+## # … with 4 more variables: avg_glucose_level &lt;dbl&gt;, bmi
+&lt;chr&gt;, smoking_status &lt;chr&gt;, stroke &lt;dbl&gt;</code></pre>
+<p><em>This Project is going to be using a dataset that attempts to predict how likely a patient is to have a stroke based on various conditions/variables. This includes the following: gender, age, hypertension, marriage status, work status, residence type, average glucose level, BMI, smoking status, and stroke status. However, though the dataset is based on at-risk individuals for strokes, the conditions of hypertension and heart disease were recorded as well. There are 4909 entries with NAs removed.</em></p>
+</div>
+<div id="manova" class="section level2">
+<h2>MANOVA</h2>
+<pre class="r"><code>library(rstatix)
+library(tidyverse)
+library(dplyr)
+
+strokedat$bmi &lt;- as.numeric(as.character(strokedat$bmi))
+
+#MANOVA with smoking status
+man1&lt;-manova(cbind(age,bmi,hypertension,heart_disease,avg_glucose_level,stroke)~smoking_status, data=strokedat)
+
+summary(man1)</code></pre>
+<pre><code>## Df Pillai approx F num Df den Df Pr(&gt;F)
+## smoking_status 3 0.19705 57.437 18 14706 &lt; 2.2e-16 ***
+## Residuals 4905
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<pre class="r"><code>#6 ANOVAs
+summary.aov(man1)</code></pre>
+<pre><code>## Response age :
+## Df Sum Sq Mean Sq F value Pr(&gt;F)
+## smoking_status 3 422738 140913 333.24 &lt; 2.2e-16 ***
+## Residuals 4905 2074125 423
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1
+##
+## Response bmi :
+## Df Sum Sq Mean Sq F value Pr(&gt;F)
+## smoking_status 3 22524 7508.0 131.41 &lt; 2.2e-16 ***
+## Residuals 4905 280233 57.1
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1
+##
+## Response hypertension :
+## Df Sum Sq Mean Sq F value Pr(&gt;F)
+## smoking_status 3 8.58 2.86153 35.004 &lt; 2.2e-16 ***
+## Residuals 4905 400.98 0.08175
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1
+##
+## Response heart_disease :
+## Df Sum Sq Mean Sq F value Pr(&gt;F)
+## smoking_status 3 2.396 0.79859 17.137 4.548e-11 ***
+## Residuals 4905 228.575 0.04660
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1
+##
+## Response avg_glucose_level :
+## Df Sum Sq Mean Sq F value Pr(&gt;F)
+## smoking_status 3 123526 41175 21.12 1.368e-13 ***
+## Residuals 4905 9562520 1950
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1
+##
+## Response stroke :
+## Df Sum Sq Mean Sq F value Pr(&gt;F)
+## smoking_status 3 1.424 0.47479 11.722 1.193e-07 ***
+## Residuals 4905 198.677 0.04051
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<pre class="r"><code>#36 Pairwise t-tests
+pairwise.t.test(strokedat$age,strokedat$smoking_status, p.adj=&quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  strokedat$age and strokedat$smoking_status 
+## 
+##              formerly smoked never smoked smokes 
+## never smoked &lt; 2e-16         -            -      
+## smokes       2.6e-14         0.56         -      
+## Unknown      &lt; 2e-16         &lt; 2e-16      &lt; 2e-16
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(strokedat$bmi,strokedat$smoking_status, p.adj=&quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  strokedat$bmi and strokedat$smoking_status 
+## 
+##              formerly smoked never smoked smokes
+## never smoked 0.015           -            -     
+## smokes       0.594           0.088        -     
+## Unknown      &lt;2e-16          &lt;2e-16       &lt;2e-16
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(strokedat$heart_disease,strokedat$smoking_status, p.adj=&quot;none&quot;)</code></pre>
+<pre><code>##
+## Pairwise comparisons using t tests with pooled SD
+##
+## data: strokedat$heart_disease and
+strokedat$smoking_status
+##
+## formerly smoked never smoked smokes
+## never smoked 9.3e-06 - -
+## smokes 0.409 0.001 -
+## Unknown 3.5e-10 0.013 3.4e-07
+##
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(strokedat$hypertension,strokedat$smoking_status, p.adj=&quot;none&quot;)</code></pre>
+<pre><code>##
+## Pairwise comparisons using t tests with pooled SD
+##
+## data: strokedat$hypertension and
+strokedat$smoking_status
+##
+## formerly smoked never smoked smokes
+## never smoked 0.21 - -
+## smokes 0.16 0.67 -
+## Unknown &lt; 2e-16 &lt; 2e-16 1.9e-10
+##
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(strokedat$avg_glucose_level,strokedat$smoking_status, p.adj=&quot;none&quot;)</code></pre>
+<pre><code>##
+## Pairwise comparisons using t tests with pooled SD
+##
+## data: strokedat$avg_glucose_level and
+strokedat$smoking_status
+##
+## formerly smoked never smoked smokes
+## never smoked 0.0031 - -
+## smokes 0.0061 0.7273 -
+## Unknown 1.0e-13 1.1e-08 4.5e-05
+##
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>pairwise.t.test(strokedat$stroke,strokedat$smoking_status, p.adj=&quot;none&quot;)</code></pre>
+<pre><code>## 
+##  Pairwise comparisons using t tests with pooled SD 
+## 
+## data:  strokedat$stroke and strokedat$smoking_status 
+## 
+##              formerly smoked never smoked smokes 
+## never smoked 0.00668         -            -      
+## smokes       0.13537         0.38840      -      
+## Unknown      2.5e-08         0.00024      0.00024
+## 
+## P value adjustment method: none</code></pre>
+<pre class="r"><code>#Overall Type I Error Rate
+1-.95^43</code></pre>
+<pre><code>## [1] 0.8898169</code></pre>
+<pre class="r"><code>#Bonferroni Adjustment
+.05/43</code></pre>
+<pre><code>## [1] 0.001162791</code></pre>
+<p><em>To begin, I decided to conduct a MANOVA on smoking status with my numeric predictors because I felt it would be interesting to see if some health statistics are correlated with smoking habits, especially strokes. The results of the MANOVA show that there is a mean difference in at least one of our numeric variables across smoker status (p &lt; 0.05). I then conducted 6 ANOVAs on my numeric variables and find that all of them show a mean difference across groups with their extremely small p-values. I then conducted individual post-hoc t-tests for each numeric variable (36 total). With this many tests, there is an 88.98% chance that we have a Type I error when unadjusted (which is very high and not good)! Conducting a bonferroni adjustment based on the amount of tests reveals the corrected threshold for significance at a value of 0.00116. When adjusted for, there are 21 significant comparisons. 17 of them are the comparisons between the “Unknown” smoking status and the other 3 categories. This makes sense because it is more than likely that this group is just a mixed bag of anyone as at the time of data collection, this question may not have been asked of the patient. I do believe that most of the assumptions for MANOVA were met as this dataset is massive with thousands of samples. However, I fear there could be a few outliers in this dataset, which MANOVA is sensitive to. It is possible for that assumption to be violated since in the world of medicine, unusual patients are not uncommon.</em></p>
+</div>
+<div id="randomization-test" class="section level2">
+<h2>Randomization Test</h2>
+<pre class="r"><code>strokedat&lt;- strokedat %&gt;% mutate(strokeNB = replace(stroke, stroke == 1, &quot;YES&quot;)) 
+
+strokedat$strokeNB[strokedat$strokeNB == 0] &lt;- &quot;NO&quot;
+
+#Mean Difference randomization test
+means&lt;-vector()
+means2&lt;-vector()
+
+for(i in 1:5000){
+samp&lt;-sample(strokedat[strokedat$strokeNB==&quot;YES&quot;,]$avg_glucose_level,replace=T)
+means[i]&lt;-mean(samp)
+samp2&lt;-sample(strokedat[strokedat$strokeNB==&quot;NO&quot;,]$avg_glucose_level,replace=T)
+means2[i]&lt;-mean(samp2)
+}
+
+#Save the meanDiff
+meanDiff&lt;-means-means2
+
+quantile(meanDiff,c(.025, .975))</code></pre>
+<pre><code>##     2.5%    97.5% 
+## 22.15751 39.26684</code></pre>
+<pre class="r"><code>#Verified with an Independent t-test
+t.test(strokedat[strokedat$strokeNB==&quot;YES&quot;,]$avg_glucose_level, strokedat[strokedat$strokeNB==&quot;NO&quot;,]$avg_glucose_level, var.equal = F)</code></pre>
+<pre><code>##
+## Welch Two Sample t-test
+##
+## data: strokedat[strokedat$strokeNB == &quot;YES&quot;,
+]$avg_glucose_level and strokedat[strokedat$strokeNB ==
+&quot;NO&quot;, ]$avg_glucose_level
+## t = 7.0015, df = 216.85, p-value = 3.128e-11
+## alternative hypothesis: true difference in means is not
+equal to 0
+## 95 percent confidence interval:
+## 21.96267 39.17263
+## sample estimates:
+## mean of x mean of y
+## 134.5714 104.0037</code></pre>
+<pre class="r"><code>#Plotted null distribution with the upper and lower cutoffs 
+ggplot()+geom_histogram(aes(meanDiff))+geom_vline(xintercept=quantile(meanDiff,c(.025,.975)))</code></pre>
+<p><img src="../../project/project2_files/figure-html/unnamed-chunk-3-1.png" width="768" style="display: block; margin: auto;" />
+<em>I conducted a randomization test on the mean difference for average glucose levels between patients who did or did not have a stroke. The null hypothesis is that the mean average glucose levels are the same across both patients who did or did not have a stroke while the alternative is that the levels do differ. After completing the test, it seems that 95% of average glucose levels between patients who did or did not have a stroke have a mean difference between 22.28 and 29.13 mmol/L. The significance of this was verified by a t-test, which has a significant p-value of 3.13E-11.</em></p>
+</div>
+<div id="linear-regression" class="section level2">
+<h2>Linear Regression</h2>
+<pre class="r"><code>library(lmtest)
+library(sandwich)
+
+#Centering Numerics
+strokedat$agecent &lt;- strokedat$age - mean(strokedat$age, na.rm = T)
+strokedat$glucent &lt;- strokedat$avg_glucose_level - mean(strokedat$avg_glucose_level, na.rm = T)
+
+#Linear Regression. Centered Age and Avg. Glucose effects on BMI
+fit1&lt;-lm(data =strokedat, bmi~agecent*glucent)
+
+summary(fit1)</code></pre>
+<pre><code>##
+## Call:
+## lm(formula = bmi ~ agecent * glucent, data = strokedat)
+##
+## Residuals:
+## Min 1Q Median 3Q Max
+## -21.211 -5.018 -1.387 3.494 72.665
+##
+## Coefficients:
+## Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept) 28.9613376 0.1089284 265.875 &lt; 2e-16 ***
+## agecent 0.1064556 0.0048212 22.081 &lt; 2e-16 ***
+## glucent 0.0217205 0.0028662 7.578 4.17e-14 ***
+## agecent:glucent -0.0002882 0.0001217 -2.368 0.0179 *
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1
+##
+## Residual standard error: 7.361 on 4905 degrees of
+freedom
+## Multiple R-squared: 0.1221, Adjusted R-squared: 0.1216
+## F-statistic: 227.4 on 3 and 4905 DF, p-value: &lt; 2.2e-16</code></pre>
+<pre class="r"><code>#Regression Plot
+ggplot(strokedat, aes(age, avg_glucose_level)) + geom_point() + geom_smooth(method=&quot;lm&quot;)</code></pre>
+<p><img src="../../project/project2_files/figure-html/unnamed-chunk-4-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>resids&lt;-fit1$residuals
+fitvals&lt;-fit1$fitted.values
+
+#Linearity/Homoskedasticity
+ggplot()+geom_point(aes(fitvals,resids))+geom_hline(yintercept=0, color=&#39;red&#39;)</code></pre>
+<p><img src="../../project/project2_files/figure-html/unnamed-chunk-4-2.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#Normality
+shapiro.test(resids)</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  resids
+## W = 0.91984, p-value &lt; 2.2e-16</code></pre>
+<pre class="r"><code>#Robust Standard Errors
+coeftest(fit1, vcov=vcovHC(fit1))</code></pre>
+<pre><code>##
+## t test of coefficients:
+##
+## Estimate Std. Error t value Pr(&gt;|t|)
+## (Intercept) 28.96133764 0.10886094 266.0398 &lt; 2.2e-16
+***
+## agecent 0.10645563 0.00446344 23.8506 &lt; 2.2e-16 ***
+## glucent 0.02172050 0.00326124 6.6602 3.035e-11 ***
+## agecent:glucent -0.00028824 0.00012429 -2.3191 0.02043 *
+## ---
+## Signif. codes: 0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1
+&#39; &#39; 1</code></pre>
+<p><em>Here, I decided to run a linear regression on bmi to see if centered age and average glucose significantly affect it in patients. When running the summary on the model, every year increase in age increases bmi by 0.106 kg/m2, every 1 mmol/L increase in average glucose level increases bmi by 0.022 kg/m2, and every one unit increase in the interaction of age and average glucose decreases bmi by 0.0003 kg/m2. The model explains a proportion of 0.1216 variation in the outcome. In regards to assumptions, visually, it appears that linearity and homoskedacity are okay. However, normality is violated due results from the Shapiro-Wilk test (p &lt; 0.05). With robust standard errors, all predictors are still significant, showing no change from the original linear regression model. This is expected since the original model cleared the homoskedacity assumption.</em></p>
+</div>
+<div id="bootstrapped-standard-errors" class="section level2">
+<h2>Bootstrapped Standard Errors</h2>
+<pre class="r"><code>samp_distn&lt;-replicate(5000, {  
+  boot_dat &lt;- sample_frac(strokedat, replace=T)
+fit3 &lt;- lm(bmi~agecent*glucent, data=boot_dat) 
+coef(fit3)
+}) 
+## Estimated SEs
+samp_distn %&gt;% t %&gt;% as.data.frame %&gt;% summarize_all(sd)</code></pre>
+<pre><code>##   (Intercept)     agecent     glucent agecent:glucent
+## 1   0.1096262 0.004480934 0.003294629    0.0001234474</code></pre>
+<pre class="r"><code>#Non-Bootstrapped SE
+summary(fit1)$coef[,1:2]</code></pre>
+<pre><code>##                      Estimate   Std. Error
+## (Intercept)     28.9613376429 0.1089283598
+## agecent          0.1064556301 0.0048211781
+## glucent          0.0217204954 0.0028662177
+## agecent:glucent -0.0002882439 0.0001217134</code></pre>
+<pre class="r"><code>bptest(fit1)</code></pre>
+<pre><code>## 
+##  studentized Breusch-Pagan test
+## 
+## data:  fit1
+## BP = 3.1282, df = 3, p-value = 0.3723</code></pre>
+<p><em>When comparing the results of the bootstrapped standard errors to the original model, they are incredibly similar to one another. The p-value that assesses for homoskedacity in the original model is quite large (0.3723) as well as the one for normality being very, VERY small (p &lt; 0.05, normality violated by Shapiro-Wilk test in previous section). Because of the close similarity in both the original and bootstraped SEs, it is fair to assume that the p-values for the bootstrapped model will also be close to what was calculated originally.</em></p>
+</div>
+<div id="logistic-regression" class="section level2">
+<h2>Logistic Regression</h2>
+<pre class="r"><code>#Logistic Regession
+fit2&lt;-glm(stroke~avg_glucose_level+age,data=strokedat,family=binomial(link=&quot;logit&quot;))
+
+#Coefficient Estimates Exponentiated
+exp(coef(fit2))</code></pre>
+<pre><code>##       (Intercept) avg_glucose_level               age 
+##      0.0003843905      1.0056123437      1.0744791318</code></pre>
+<pre class="r"><code>#Classification Diagnostics
+prob&lt;-predict(fit2,type=&quot;response&quot;)
+
+class_diag(prob,strokedat$stroke)</code></pre>
+<pre><code>##         acc sens spec ppv       auc
+## 1 0.9574251    0    1 NaN 0.8447903</code></pre>
+<pre class="r"><code>#Confusion Matrix
+table(predict=as.numeric(prob&gt;.5),truth=strokedat$stroke)%&gt;%addmargins</code></pre>
+<pre><code>##        truth
+## predict    0    1  Sum
+##     0   4700  209 4909
+##     Sum 4700  209 4909</code></pre>
+<pre class="r"><code>#Density Plot of log-odds
+strokedat$logit&lt;-predict(fit2)
+
+strokedat$outcome&lt;-factor(strokedat$strokeNB,levels=c(&quot;YES&quot;,&quot;NO&quot;))
+
+ggplot(strokedat,aes(logit, fill=outcome))+geom_density(alpha=.3)+
+  geom_vline(xintercept=0,lty=2)</code></pre>
+<p><img src="../../project/project2_files/figure-html/unnamed-chunk-6-1.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#ROC Curve
+library(plotROC)
+
+ROCplot&lt;-ggplot(strokedat)+geom_roc(aes(d=outcome,m=prob), n.cuts=0) 
+
+ROCplot</code></pre>
+<p><img src="../../project/project2_files/figure-html/unnamed-chunk-6-2.png" width="768" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>#AUC
+calc_auc(ROCplot)</code></pre>
+<pre><code>##   PANEL group       AUC
+## 1     1    -1 0.8447933</code></pre>
+<p><em>For my logistic regression, I now attempted to predict strokes from some other predictors in the dataset: average glucose level and age. When fitted, the exponentiated coefficients tell us that for every unit increase of glucose level (mmol/L) and age (year), the odds of a stroke increase by 0.561% and 7.45%, respectively. Upon calculating the classification diagnostics for this model, we have an overall accuracy of 0.95, sensitivity of 0, specificity of 1, precision of NaN, and AUC of 0.84. I know what you’re thinking: Sensitivity, specificity, and precision all seem a little weird. However, this makes sense in the model due to the vast majority of entries not being afflicted from a stroke. About 200 of the roughly 4900 have experienced a stroke before, so it is possible that in this dataset that strokes cannot be predicted from age and glucose level well enough on their own. Our model is also pretty good from having a decently high AUC value as well. Verified with a ROC plot, our AUC is the same at 0.84.</em></p>
+</div>
+<div id="logistic-regression-with-everything-else" class="section level2">
+<h2>Logistic Regression with Everything Else!</h2>
+<pre class="r"><code>strokeclean &lt;- strokedat[,c(2:12)]
+
+head(strokeclean)</code></pre>
+<pre><code>## # A tibble: 6 x 11
+## gender age hypertension heart_disease ever_married
+work_type Residence_type avg_glucose_lev…
+## &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt; &lt;chr&gt; &lt;chr&gt; &lt;dbl&gt;
+## 1 Male 67 0 1 Yes Private Urban 229.
+## 2 Male 80 0 1 Yes Private Rural 106.
+## 3 Female 49 0 0 Yes Private Urban 171.
+## 4 Female 79 1 0 Yes Self-emp… Rural 174.
+## 5 Male 81 0 0 Yes Private Urban 186.
+## 6 Male 74 1 1 Yes Private Rural 70.1
+## # … with 3 more variables: bmi &lt;dbl&gt;, smoking_status
+&lt;chr&gt;, stroke &lt;dbl&gt;</code></pre>
+<pre class="r"><code>#Logisitic Regression featuring the rest of the available predictors
+fit4&lt;-glm(stroke~.,data=strokeclean,family=binomial(link=&quot;logit&quot;))
+
+prob2&lt;-predict(fit4,type=&quot;response&quot;)
+
+#Classification Diagnostics
+class_diag(prob2,strokedat$stroke)</code></pre>
+<pre><code>##         acc        sens      spec ppv      auc
+## 1 0.9574251 0.004784689 0.9997872 0.5 0.852712</code></pre>
+<pre class="r"><code>#10-fold CV
+k=10
+
+data &lt;- strokeclean %&gt;% sample_frac
+folds &lt;- ntile(1:nrow(data),n=10) 
+
+diags&lt;-NULL
+for(i in 1:k){
+  train &lt;- data[folds!=i,] 
+  test &lt;- data[folds==i,] 
+  truth &lt;- test$stroke 
+  
+  fit5 &lt;- glm(stroke~., data=strokeclean, family=&quot;binomial&quot;)
+  probs &lt;- predict(fit5, newdata=test, type=&quot;response&quot;)
+  
+  diags&lt;-rbind(diags,class_diag(probs,truth))
+}
+
+#Classification Diagnostics for 10-fold CV
+summarize_all(diags,mean)</code></pre>
+<pre><code>##         acc        sens      spec ppv       auc
+## 1 0.9574263 0.003448276 0.9997895 NaN 0.8515516</code></pre>
+<pre class="r"><code>library(glmnet)
+
+#LASSO
+y&lt;-as.matrix(strokeclean$stroke)
+x&lt;-model.matrix(stroke~.,data=strokeclean)[,-1]
+
+cv&lt;-cv.glmnet(x,y,family=&quot;binomial&quot;)
+lasso&lt;-glmnet(x,y,family=&quot;binomial&quot;,lambda=cv$lambda.1se)
+
+coef(lasso)</code></pre>
+<pre><code>## 17 x 1 sparse Matrix of class &quot;dgCMatrix&quot;
+##                                      s0
+## (Intercept)                -5.292370037
+## genderMale                  .          
+## genderOther                 .          
+## age                         0.038162880
+## hypertension                0.183911968
+## heart_disease               0.109619300
+## ever_marriedYes             .          
+## work_typeGovt_job           .          
+## work_typeNever_worked       .          
+## work_typePrivate            .          
+## work_typeSelf-employed      .          
+## Residence_typeUrban         .          
+## avg_glucose_level           0.001648935
+## bmi                         .          
+## smoking_statusnever smoked  .          
+## smoking_statussmokes        .          
+## smoking_statusUnknown       .</code></pre>
+<pre class="r"><code>#10-fold CV with LASSO selected variables
+k=10
+
+data &lt;- strokeclean %&gt;% sample_frac
+folds &lt;- ntile(1:nrow(data),n=10)
+
+diags&lt;-NULL
+for(i in 1:k){
+  train &lt;- data[folds!=i,]
+  test &lt;- data[folds==i,]
+  truth &lt;- test$stroke
+  
+  fit5 &lt;- glm(stroke~age+hypertension+heart_disease+avg_glucose_level, data=strokeclean, family=&quot;binomial&quot;)
+  probs &lt;- predict(fit5, newdata=test, type=&quot;response&quot;)
+  
+  diags&lt;-rbind(diags,class_diag(probs,truth))
+}
+
+#Classification Diagnostics for LASSO 10-fold CV
+summarize_all(diags,mean)</code></pre>
+<pre><code>##         acc sens spec ppv       auc
+## 1 0.9574276    0    1 NaN 0.8468844</code></pre>
+<p><em>In the final logistic regression, I am now using 10 predictors from the dataset to see if they significantly predict the occurrence of strokes. With this set of classification diagnostics, we have a fairly similar accuracy and AUC (0.85) to last model. However, the sensitivity and specificity changed ever so slightly from 0 and 1, respectively. Precision now has a value of 0.5, meaning that R believes that now at least half of the patients who have had strokes were predicted correctly from the model. Unlike the previous model, now having the rest of the available predictors helped in predicting strokes more effectively, even if the change overall is minuscule. Performing a 10-fold CV gives an AUC of 0.86, which is quite close to the original model. After conducting a LASSO, the non-zero variables we will retain for the final, lasso-selected CV are: age, hypertension, heart disease, and average glucose level. From the lasso-selected CV, a similar, good AUC value is computed like the previous logistic regressions above: 0.85.</em></p>
+</div>
+
+            
+        <hr>         <div class="related-posts">
+                <h5>Related Posts</h5>
+                
+              </div> 
+            </div>
+          </div>
+
+   <hr>  <div class="disqus">
+  <div id="disqus_thread"></div>
+  <script type="text/javascript">
+
+    (function() {
+      
+      
+      if (window.location.hostname == "localhost")
+        return;
+
+      var disqus_shortname = '';
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+  <a href="http://disqus.com/" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div> 
+        </div>
+      </div>
+    </div>
+
+    
+    <footer>
+  <div id="footer">
+    <div class="container">
+      <p class="text-muted">&copy; All rights reserved. Powered by <a href="https://gohugo.io/">Hugo</a> and
+      <a href="http://www.github.com/nurlansu/hugo-sustain/">sustain</a> with ♥</p>
+    </div>
+  </div>
+</footer>
+<div class="footer"></div>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="../../js/docs.min.js"></script>
+<script src="../../js/main.js"></script>
+
+<script src="../../js/ie10-viewport-bug-workaround.js"></script>
+
+
+    
+  </body>
+</html>

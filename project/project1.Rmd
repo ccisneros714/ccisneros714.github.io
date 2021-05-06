@@ -1,0 +1,172 @@
+---
+title: 'Project 1: Exploratory Data Analysis'
+author: "Carlos Cisneros, chc956"
+date: '4/4/2021'
+output:
+  html_document:
+  toc: yes
+toc_float:
+  collapsed: no
+smooth_scroll: yes
+pdf_document:
+  toc: no
+---
+  
+  ```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, eval = TRUE, fig.align = "center", warning = F, message = F,
+                      tidy=TRUE, tidy.opts=list(width.cutoff=60), R.options=list(max.print=100))
+```
+---
+
+## Introduction
+
+#### Hello! For this project I am going to walk you through the interesting world of video streaming statistics featuring the two most prominent platforms presently on the internet: Youtube and Twitch. I spent about a day going through various sites with datasets to see if anything caught my interest, and I fell upon two of them on Kaggle that each featured the top streamers and content creators for Youtube and Twitch, respectively. The Youtube dataset contains the top 250 channels in the United States, including their Subscriber count at the time (2020), total views, rank, grade (as deemed by the Social Blade tracking website), and total uploads. The Twitch dataset has broader statistics available for collection, such as: total Watch time (cumulative from all viewers), total Stream time, peak (record) viewers on stream, language, partner status, follower count, and views gained. This is particularly interesting to me since Twitch is a big player on the internet and is continuing to grow, while Youtube has been a video-hosting super power for more than a decade now. I thought it would be cool to analyze these datasets combined and how the data from each platform compares to each other from last year, 2020.
+
+---
+
+## Part 1 and 2: Tidying/Rearranging Wide/Long, Joining Data
+
+```{R}
+usa_top_250<-read.csv("usa_top_500.csv")
+twitchdata<-read.csv("twitchdata-update.csv")
+
+library(dplyr)
+library(tidyverse)
+
+top250Lang<- usa_top_250 %>% mutate(Language = 'English') %>% mutate(Subscriptions = case_when(
+  str_detect(Subscriptions, "M") ~ as.numeric(str_extract(Subscriptions, "[\\d\\.]+")) * 1000000,
+  str_detect(Subscriptions, "K") ~ as.numeric(str_extract(Subscriptions, "[\\d\\.]+")) * 1000,))
+
+TrueTwitchdata <- twitchdata %>% mutate(Peak.viewers = (Average.viewers*365))
+
+ top250Lang$Views <- gsub(",","",top250Lang$Views)
+ top250Lang$Views <- as.numeric(top250Lang$Views)
+
+Joined_Data<- full_join(TrueTwitchdata, top250Lang, by=c("Channel"="Ch_name", "Language","Followers"="Subscriptions","Peak.viewers"="Views") )
+
+head(Joined_Data)
+```
+
+*I joined my data using full_join since I had multiple variables that overlapped with one another in the data sets: Channel name, Language (which I set as English in the Youtube data since these are U.S. channels), Followers/Subscribers, and Viewers. I also created/replaced a column with the correct cumulative, peak viewers in the Twitch dataset by taking the average viewer data and multiplying it for every day in a year (since streamers stream daily, in most cases). I did not want to drop any rows since the datasets don't fully share each other's columns, so full_join was the safest and most convenient to run.*
+
+```{r}
+UntidyJoin<- Joined_Data %>% pivot_wider(names_from = Language, values_from = Language)
+
+TidyJoin<-UntidyJoin %>% pivot_longer(c('English':'Swedish'), names_to ="Language", values_to ="Language Spoken", values_drop_na = T) %>%
+  select(-c('Language Spoken')) %>% relocate('Language', .after ='Mature' )
+
+TidyJoin %>% select(c(Channel,Language))
+```
+
+*Here, I untied and re-tidied my data since it was pretty tidy as is. I got all of the different languages under the `Language` column and made each of them their own. Then, I re-tidied my data by grabbing all the language columns and putting them back in place again, deleting the duplicate column once pivot_longer was complete.*
+
+---
+
+## Part 3: Wrangling
+
+```{r}
+TidyJoin$Uploads <- gsub(",","",TidyJoin$Uploads)
+TidyJoin$Uploads <- as.numeric(TidyJoin$Uploads)
+
+TidyJoin %>% select(c(Channel, `Peak.viewers`)) %>% arrange(desc(`Peak.viewers`))
+
+TidyJoin %>% select(c(Channel, `Peak.viewers`)) %>% summarize(mean= mean(`Peak.viewers`), sd= sd(`Peak.viewers`), min= min(`Peak.viewers`), max= max(`Peak.viewers`), count= n(), se= (sd/sqrt(count)))
+
+TidyJoin %>% select(c(Channel, Followers)) %>% arrange(desc(`Followers`))
+
+TidyJoin %>% select(c(Channel, Followers)) %>% drop_na(Followers) %>% summarize(mean= mean(Followers), sd= sd(Followers), min= min(Followers), max= max(Followers), count= n(), se= (sd/sqrt(count)))
+
+TrueViewsTidyJoin <- TidyJoin %>% mutate(Uploads= replace_na(Uploads, 1)) %>%  mutate(`Views/Uploads`= (`Peak.viewers`/`Uploads`))
+
+TrueViewsTidyJoin %>% select(c(Channel, `Views/Uploads`)) %>% drop_na(`Views/Uploads`) %>% arrange(desc(`Views/Uploads`))
+
+TrueViewsTidyJoin %>% select(c(Channel, `Views/Uploads`)) %>% summarize(mean= mean(`Views/Uploads`), sd= sd(`Views/Uploads`), min= min(`Views/Uploads`), max= max(`Views/Uploads`), count= n(), se= (sd/sqrt(count)))
+
+
+```
+
+*I created 6 summary statistics for Cumulative (peak) viewers, Followers (includes YT subscribers), and Views per Upload: mean, standard deviation, minimum, maximum, count, and standard error. There are a couple of things in common that each summary shares: Youtube is DOMINATING all of these categories. When arranged from top to bottom, the top entries displayed are all Youtube channels, with Twitch channels coming nowhere near close. However, from each of those lists, they varied amongst types of Youtube channels at the top: Personalities and Highlight clips from total (peak) views and followers while music channels dominated in views per upload. This makes sense because music videos have crazy, crazy view numbers that break into the billions and are listened to worldwide. When looking at the summary statistics, there is a massive amount of variation with obscenely large standard deviations. In reality, Youtube is just on a whole other level than Twitch still, despite its popularity.*
+
+```{r}
+HrPAV<-TidyJoin %>% mutate(HrPAV = (`Watch.time.Minutes.`/`Average.viewers`  )/60) %>%
+relocate('HrPAV', .after='Followers')
+
+HrPAV %>% group_by(Partnered)  %>% filter(Partnered %in% c('True','False')) %>%   summarize(mean= mean(HrPAV), sd= sd(HrPAV), min= min(HrPAV), max= max(HrPAV), count= n(), se= (sd/sqrt(count)))
+
+HrPAV %>% group_by(Language) %>% drop_na(HrPAV) %>%   summarize(mean= mean(HrPAV), sd= sd(HrPAV), min= min(HrPAV), max= max(HrPAV), count= n(), se= (sd/sqrt(count)))
+
+```
+*Since the difference in followers and viewers are massive due to the Youtube data, I decided to play around to see if being an official Twitch partner affected watch time. An official partner is Twitch's way of saying a creator is verified to have "good" content, generally. To do this, the most effective way is by measuring watch time per average viewer count as the algorithm on Twitch likes when viewers are consistent and have high retainment to the stream. So, I created a new column with Hours per average viewer (HrPAV) and found summary statistics for them. Looking at mean alone, Partner status among top streamers does not really affect this. Standard deviations are different, but this is probably due to the much lower sample size in a non-partner. This helps clarify that Twitch content creators overall are just overwhelmed by Youtube channels as of 2020. Do note though that this is a LOT of time to invest in Twitch streams, though. 2000 hours is roughly 83 straight days of watching a particular stream!*
+
+*Language shows little difference among Twitch streamers as well. Most means are in the 2000s for average hours per average viewer with the exception of Arabic, Greek, Hungarian, Swedish, Slovak, Other and Finnish, which have a small sample size in the data set. Though the Youtube dataset consists of only the top U.S. channels, this Language summary table from the Twitch dataset shows that across the board, viewership data from streamers worldwide is pretty similar, with not too dramatic variation like the various types of Youtube channels show in the first round of summary statistics I ran.*
+
+---
+
+## Part 4: Visualization
+
+```{r}
+cormat<- TrueViewsTidyJoin %>% select(c(`Views/Uploads`, Peak.viewers, Followers)) %>%  select_if(is.numeric) %>% cor(use = "pair")
+
+tidycor <- cormat %>% as.data.frame %>% rownames_to_column("var1") %>%
+  pivot_longer(-1,names_to="var2",values_to="correlation")
+tidycor
+
+tidycor %>%  ggplot(aes(var1, var2, fill = correlation)) + geom_tile() + 
+  scale_fill_gradient2(low = "yellow", high = "red") + theme(axis.text.x = element_text(angle = 90, hjust = 1)) +
+  geom_text(aes(label = round(correlation, 2))) + 
+  coord_fixed() + ggtitle("Correlation Heat Map") + theme(axis.text.x = element_text(size = 8), axis.text.y = element_text(size = 8))
+
+ggplot(TrueViewsTidyJoin, aes(Peak.viewers, `Followers`)) + geom_point(size=3, aes(color=Partnered)) + scale_x_continuous(breaks = scales::pretty_breaks(n = 5)) +
+scale_y_continuous(breaks = scales::pretty_breaks(n = 5)) + xlim(0,20000000000)+ylim(0,50000000) +
+geom_smooth()  +
+  ggtitle("Cumulative Views vs Followers (2020)") + 
+    ylab("Followers") + xlab("Cumulative Views")
+
+HrPAVStats <- HrPAV %>% group_by(Language) %>% drop_na(HrPAV) %>%   summarize(mean= mean(HrPAV), sd= sd(HrPAV), min= min(HrPAV), max= max(HrPAV), count= n(), se= (sd/sqrt(count)))
+
+ggplot(HrPAVStats, aes(x = Language, y = mean)) + geom_bar(stat = "summary") + 
+geom_errorbar(aes(x = Language, y = mean, ymin = mean - se, ymax = mean + se)) + 
+ggtitle("Average Hours Per Viewer by Language (2020)") + ylab("Mean Hours Per Average Viewer") + xlab("Language") + coord_flip()
+```
+
+*In the correlation heat map, the only strong correlation value is between followers and peak viewers. To study that 0.87 correlation value for Cumulative (peak) Viewers and Followers in more detail, we will visualize it in a scatterplot with a trendline. For the other two moderate correlations of 0.43 and 0.52, this means there is somewhat of an assocation, but these values are not strong enough to make confident predictions unlike peak viewers and followers.*
+
+*In the scatterplot, it seems like the correlation between followers and cumulative viewers is carried by the Youtube channels (NA in `Partnered`). All the Twitch channels are on the leftmost fringe, showing how small they are in comparison to the Youtube titans around since the early 2010s. This trend line is essentially made by the Youtube data.*
+
+*The final barchart shows a visualization of the `Average Hours Per Viewer`  by `Language` done earlier in the summary statistics. Without considering "Other" since it is a collection of languages not listed in the dataset, the most watched Hours by average viewer by langauge is the sole Finnish streamer, Thai, and Czech streamers. Though standard error shows it can vary, those are some dedicated viewers!*
+
+---
+
+## Part 5: Clustering
+```{r}
+clust_dat<- TrueViewsTidyJoin%>% select(`Peak.viewers`,`Followers`,`Views/Uploads`) %>% na.omit()
+
+library(cluster)
+
+
+pam_dat<-clust_dat%>%select(`Peak.viewers`,`Followers`,`Views/Uploads`)
+sil_width<-vector()
+for(i in 2:10){  
+  pam_fit <- pam(pam_dat, k = i)  
+  sil_width[i] <- pam_fit$silinfo$avg.width  
+}
+ggplot()+geom_line(aes(x=1:10,y=sil_width))+scale_x_continuous(name="Clusters",breaks=1:10) +
+  ylab("Silhouette Width")
+
+pam2 <-clust_dat %>% scale %>% pam(7)
+pam2
+
+
+final<-clust_dat %>% mutate(cluster=pam2$clustering)
+
+library(plotly)
+final%>%plot_ly(x= ~`Peak.viewers`,  y = ~`Followers`, z = ~`Views/Uploads`, color= ~cluster, type = "scatter3d", mode = "markers")
+
+library(GGally)
+ggpairs(final, columns=1:3, aes(color=as.factor(cluster)))
+
+pam2$silinfo$avg.width
+```
+*I used PAM to cluster my data using Peak (cumulative) viewers, Followers, and Views per Upload. I found that 7 clusters work best after analyzing the `Silhouette Width` graph and 7 clusters having the highest peak. Once visualized, the following results are around what I expected. The strongest correlation between Followers and Cumulative (peak) viewers shows Cluster 5 as those insanely massive Youtube channels that just break away from most of the other clusters such as long-term content creators, highlight channels, and child-friendly Youtube channels that amass tens of millions of views per video. Twitch channels tend to be all clumped up in all three graphs: Clusters 1, 2, and 3. The goodness of fit is shown with an average silhouette value of 0.59. It is moderate at best, which shows in the visualization of some clumped up clusters in the bottom left corners while 4 through 7 break away in various directions. In the 3D plot, this just goes to further reinforce the finding that the top content creators from Youtube and Twitch are still in completely different leagues when comparing their video statistics and followings. However, with streaming on the rise to this day, the two platforms could be more competitive in the coming years, especially with the time average viewers invest into their favorite streamers every day.*
+
+---

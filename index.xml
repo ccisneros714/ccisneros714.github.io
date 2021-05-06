@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Carlos Cisneros</title>
+    <link>/</link>
+    <description>Recent content on Carlos Cisneros</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-US</language>
+    <lastBuildDate>Thu, 06 May 2021 00:00:00 +0000</lastBuildDate><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Coding Fusion!</title>
+      <link>/post/2021/05/06/coding-fusion/</link>
+      <pubDate>Thu, 06 May 2021 00:00:00 +0000</pubDate>
+      
+      <guid>/post/2021/05/06/coding-fusion/</guid>
+      <description>R and Python: 2 Worlds Collide I realize that the title and subtitle for this page may make it seem like we are gonna do something insanely cool, but it will just be a quick demonstration with some simple reticulate shenanigans.
+Let’s start with out first component: R. Below you’ll see me load up the reticulate package and save a variable as “Da”.
+library(reticulate) Da&amp;lt;-&amp;quot;LESSS&amp;quot; Now for our second component: Python.</description>
+    </item>
+    
+    <item>
+      <title>Hello R Markdown</title>
+      <link>/post/2015/07/23/hello-r-markdown/</link>
+      <pubDate>Thu, 23 Jul 2015 21:13:14 -0500</pubDate>
+      
+      <guid>/post/2015/07/23/hello-r-markdown/</guid>
+      <description>R Markdown This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see http://rmarkdown.rstudio.com.
+You can embed an R code chunk like this:
+summary(cars) ## speed dist ## Min. : 4.0 Min. : 2.00 ## 1st Qu.:12.0 1st Qu.: 26.00 ## Median :15.0 Median : 36.00 ## Mean :15.4 Mean : 42.98 ## 3rd Qu.</description>
+    </item>
+    
+    <item>
+      <title>Project 1: Exploratory Data Analysis</title>
+      <link>/project/project1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/project/project1/</guid>
+      <description>Introduction Hello! For this project I am going to walk you through the interesting world of video streaming statistics featuring the two most prominent platforms presently on the internet: Youtube and Twitch. I spent about a day going through various sites with datasets to see if anything caught my interest, and I fell upon two of them on Kaggle that each featured the top streamers and content creators for Youtube and Twitch, respectively.</description>
+    </item>
+    
+    <item>
+      <title>Project 2: Modeling, Testing, and Predicting</title>
+      <link>/project/project2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/project/project2/</guid>
+      <description>Introduction strokedat&amp;lt;-read_csv(&amp;quot;healthcare-dataset-stroke-data.csv&amp;quot;) strokedat[strokedat == &amp;quot;N/A&amp;quot;] &amp;lt;- NA strokedat&amp;lt;- strokedat %&amp;gt;% na.omit() head(strokedat) ## # A tibble: 6 x 12 ## id gender age hypertension heart_disease ever_married work_type Residence_type ## &amp;lt;dbl&amp;gt; &amp;lt;chr&amp;gt; &amp;lt;dbl&amp;gt; &amp;lt;dbl&amp;gt; &amp;lt;dbl&amp;gt; &amp;lt;chr&amp;gt; &amp;lt;chr&amp;gt; &amp;lt;chr&amp;gt; ## 1 9046 Male 67 0 1 Yes Private Urban ## 2 31112 Male 80 0 1 Yes Private Rural ## 3 60182 Female 49 0 0 Yes Private Urban ## 4 1665 Female 79 1 0 Yes Self-emp… Rural ## 5 56669 Male 81 0 0 Yes Private Urban ## 6 53882 Male 74 1 1 Yes Private Rural ## # … with 4 more variables: avg_glucose_level &amp;lt;dbl&amp;gt;, bmi &amp;lt;chr&amp;gt;, smoking_status &amp;lt;chr&amp;gt;, stroke &amp;lt;dbl&amp;gt; This Project is going to be using a dataset that attempts to predict how likely a patient is to have a stroke based on various conditions/variables.</description>
+    </item>
+    
+    <item>
+      <title>Projects</title>
+      <link>/projects/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/projects/</guid>
+      <description> Check out some of my coding projects below:
+ Wrangling &amp;amp; Exploratory Data Analysis
+ Modeling, Inference, Prediction
+  -- </description>
+    </item>
+    
+    <item>
+      <title>Resume</title>
+      <link>/resume/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>/resume/</guid>
+      <description>    </description>
+    </item>
+    
+  </channel>
+</rss>
