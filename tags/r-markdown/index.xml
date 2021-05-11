@@ -14,7 +14,7 @@
       
       <guid>/post/2021/05/06/coding-fusion/</guid>
       <description>R and Python: 2 Worlds Collide I realize that the title and subtitle for this page may make it seem like we are gonna do something insanely cool, but it will just be a quick demonstration with some simple reticulate shenanigans.
-Let’s start with out first component: R. Below you’ll see me load up the reticulate package and save a variable as “Da”.
+Let’s start with our first component: R. Below you’ll see me load up the reticulate package and save a variable as “Da”.
 library(reticulate) Da&amp;lt;-&amp;quot;LESSS&amp;quot; Now for our second component: Python.</description>
     </item>
     
